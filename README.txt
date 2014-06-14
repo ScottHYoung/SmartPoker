@@ -11,4 +11,6 @@ the progress!
 To Do:
 
 - Setup Game object basics
+- Make Deck class
 - Setup basic terminal interface for play
+- Add human/AI classes

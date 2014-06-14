@@ -19,6 +19,7 @@
 #
 #---------------------------------------------------------------------------
 
+from player import PlayerInfo
 import card
 
 #---------------------------------------------------------------------------
@@ -99,66 +100,7 @@ class State():
 		#Passed all checks, is a valid game state	
 		return True
 						
-#---------------------------------------------------------------------------
-#	PlayerInfo class
-#
-#	Holds all info per player in the game necessary for the interface & any
-#	decisions.
-#---------------------------------------------------------------------------		
-class PlayerInfo():
-	
-	#---------------------------------------------------------------------------
-	#	Constructor
-	#
-	#	Takes an ID, name, turn order, bank, pot contribution, pocket cards, activeTurn
-	#	and miscInfo string array
-	#---------------------------------------------------------------------------
-	def __init__(self, ID, name, turnOrder, bank, pot, pocket, activeTurn, miscInfo = []):
-		
-		self.id = ID
-		self.name = name
-		self.turnOrder = turnOrder
-		self.bank = bank
-		self.pot = pot
-		self.pocket = pocket
-		self.activeTurn = activeTurn
-		self.miscInfo = miscInfo
-		
-	#---------------------------------------------------------------------------
-	#	isValid()
-	#
-	#	Determines whether player info is valid
-	#---------------------------------------------------------------------------	
-	def isValid(self):
-		
-		if self.turnOrder < -1:
-			return False
-			
-		if self.turnOrder == -1:
-			if self.bank > 0:
-				return False
-			if self.pot > 0:
-				return False
-			if self.activeTurn:
-				return False
-			if len(self.pocket) > 0:
-				return False
-		else:
-			if self.bank == 0 and self.pot == 0:
-				return False
-			if len(self.pocket) != 2:
-				return False
-			elif not self.pocket[0].isValid() or not self.pocket[1].isValid():
-				return False
-		
-		if self.bank < 0:
-			return False
-			
-		if self.pot < 0:
-			return False
-			
-		#All tests are passed
-		return True
+
 
 
 #========================================
