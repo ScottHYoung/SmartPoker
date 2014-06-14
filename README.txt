@@ -7,3 +7,8 @@ and likelihood of success at each point in the game.
 
 I'm not entirely sure how well this will turn out, but anyone is free to watch
 the progress!
+
+To Do:
+
+- Setup Game object basics
+- Setup basic terminal interface for play

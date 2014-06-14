@@ -39,7 +39,7 @@ class Settings():
 					value = 2
 				elif value > 12:
 					value = 12
-				self.numPlayers = setting
+				self.numPlayers = value
 				
 			#Number of chips	
 			elif i == 1:
@@ -76,4 +76,26 @@ class Settings():
 
 if __name__ == '__main__':
 
-	pass	
+	#UNIT TESTS
+	print "Testing constructor."
+	
+	testsets =[["3", "140", "10", "2"],
+			  [],
+			  ["3", "140", "140", "2"],
+			  ["1", "140", "10", "2"],
+			  ["15", "140", "10", "14"],
+			  ["3", "140", "10", "4"],
+			  ["-1", "-100", "-10", "-4"],
+			  ["0", "0", "0", "0"]]
+			
+	for test in testsets:
+		settings = Settings(test)
+		
+		assert settings.numPlayers >= 2
+		assert settings.numChips > 0
+		assert settings.smallBlind <= settings.numChips/2
+		assert settings.smallBlind >= 0
+		assert settings.numAIs <= settings.numPlayers
+		assert settings.numPlayers <= 12
+		
+	print "Test complete."

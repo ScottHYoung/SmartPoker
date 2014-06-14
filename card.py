@@ -53,6 +53,8 @@ class Card:
 			self.number = "K"	
 		elif newNumber == "A" or newNumber == "ACE" or newNumber == "1":
 			self.number = "A"
+		elif newNumber == "UNKNOWN" or newNumber == "?":
+			self.number = "unknown"
 		else:
 			self.number = "undefined"
 			
@@ -66,6 +68,8 @@ class Card:
 			self.suit = "clubs"
 		elif newSuit == "spades" or newSuit == "s":
 			self.suit = "spades"
+		elif newSuit == "unknown" or newSuit == "?":
+			self.suit = "unknown"
 		else:
 			self.suit = "undefined"	
 			
@@ -79,9 +83,9 @@ class Card:
 		if self.suit != "undefined" and self.number != "undefined":
 
 			#Assert that it is not some other string (should never happen)
-			assert (self.suit == "hearts" or self.suit == "diamonds" or self.suit == "clubs" or self.suit == "spades")
+			assert (self.suit == "hearts" or self.suit == "diamonds" or self.suit == "clubs" or self.suit == "spades" or self.suit == "unknown")
 			assert (self.number == "2" or self.number == "3" or self.number == "4" or self.number == "5" or self.number == "6" or
-					self.number == "7" or self.number == "8" or self.number == "9" or self.number == "10" or 
+					self.number == "7" or self.number == "8" or self.number == "9" or self.number == "10" or self.number == "unknown" or
 					self.number == "J" or self.number == "Q" or self.number == "K" or self.number == "A")
 
 			return True
@@ -145,6 +149,15 @@ class Card:
 
 		return (card.isValid() and self.isValid()) and self.suit == card.suit
 		
+		
+	#---------------------------------------------------------------------------
+	#	isKnown()
+	#
+	#	Returns true if the card isn't unknown or undefined
+	#---------------------------------------------------------------------------	
+	def isKnown(self):
+
+		return self.isValid() and self.suit != "unknown" and self.number != "unknown"		
 		
 #========================================
 #	FUNCTIONS
@@ -211,7 +224,17 @@ if __name__ == '__main__':
 	newCard = Card("h", "!")
 	assert not newCard.isValid()
 	newCard = Card("!", "2")
-	assert not newCard.isValid()									
+	assert not newCard.isValid()
+	
+	
+	newCard = Card("C", "?")
+	assert newCard.isValid()
+	newCard = Card("unknown", "10")
+	assert newCard.isValid()
+	newCard = Card("?", "UNKNOWN")
+	assert newCard.isValid()	
+	newCard = Card("!", "UNKNOWN")
+	assert not newCard.isValid()											
 	
 	print "Test successful."
 	
@@ -301,4 +324,19 @@ if __name__ == '__main__':
 	card2 = Card("H", "A")
 	assert not card1.isPair(card2)	
 	
-	print "Test successful."				
+	print "Test successful."
+	
+	print "Testing isKnown()"
+	
+	card = Card("?", "?")
+	assert not card.isKnown()	
+	card = Card("h", "?")
+	assert not card.isKnown()
+	card = Card("?", "A")
+	assert not card.isKnown()	
+	card = Card("H", "10")
+	assert card.isKnown()	
+	card = Card("!", "!")
+	assert not card.isKnown()
+	
+	print "Test successful."					

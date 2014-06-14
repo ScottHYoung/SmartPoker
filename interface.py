@@ -7,7 +7,7 @@
 #	visualizers must inherit at least these basic methods
 #---------------------------------------------------------------------------
 
-import settings, state, decision
+import settings, state, decision, card
 
 #---------------------------------------------------------------------------
 #	Interface class
@@ -38,11 +38,11 @@ class Interface():
 		return default
 
 	#---------------------------------------------------------------------------
-	#	giveDecision()
+	#	getDecision()
 	#
 	#	Returns the default decision
 	#---------------------------------------------------------------------------		
-	def giveDecision(self, gameState):
+	def getDecision(self, gameState):
 		
 		default = decision.Decision()
 		return default
@@ -53,4 +53,22 @@ class Interface():
 
 if __name__ == '__main__':
 	
-	pass		
+	print "Testing constructor"
+	interface = Interface()
+	
+	settings = interface.setupGame()
+	assert settings != None
+	
+	player1 = state.PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
+	player2 = state.PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
+	player3 = state.PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
+	player4 = state.PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	
+	infos = [player1, player2, player3, player4]
+	
+	testState = state.State(infos, [])	
+	
+	decision = interface.getDecision(testState)
+	assert decision != None
+	
+	print "Test complete."
