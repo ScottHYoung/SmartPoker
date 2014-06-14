@@ -30,6 +30,7 @@ class Player():
 		
 		self.pot = 0
 		self.turnOrder = -1
+		self.isDealer = False
 		self.pocket = []
 		self.activeTurn = False	
 		self.miscInfo = []
@@ -67,7 +68,7 @@ class PlayerInfo():
 	#	Takes an ID, name, turn order, bank, pot contribution, pocket cards, activeTurn
 	#	and miscInfo string array
 	#---------------------------------------------------------------------------
-	def __init__(self, ID, name, turnOrder, bank, pot, pocket, activeTurn, miscInfo = []):
+	def __init__(self, ID, name, turnOrder, bank, pot, pocket, isDealer, activeTurn, miscInfo = []):
 		
 		self.id = ID
 		self.name = name
@@ -75,6 +76,7 @@ class PlayerInfo():
 		self.bank = bank
 		self.pot = pot
 		self.pocket = pocket
+		self.isDealer = isDealer
 		self.activeTurn = activeTurn
 		self.miscInfo = miscInfo
 		
@@ -95,6 +97,8 @@ class PlayerInfo():
 				return False
 			if self.activeTurn:
 				return False
+			if self.isDealer:
+				return False
 			if len(self.pocket) > 0:
 				return False
 		else:
@@ -113,3 +117,9 @@ class PlayerInfo():
 			
 		#All tests are passed
 		return True
+		
+#========================================
+#	TESTS
+#========================================	
+if __name__ == '__main__':	
+	pass	

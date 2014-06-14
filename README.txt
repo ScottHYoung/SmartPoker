@@ -10,7 +10,7 @@ the progress!
 
 To Do:
 
-- Setup Game object basics
-- Make Deck class
+- Finish coding newHand() function
+- Player/PlayerInfo unit tests
 - Setup basic terminal interface for play
 - Add human/AI classes

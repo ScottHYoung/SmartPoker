@@ -50,12 +50,16 @@ class State():
 		# Confirm all players have valid information
 		if len(self.playersInfo) > 2:
 			activePlayers = 0
+			numDealers = 0
 			ids = []
 			turnOrders = []
 			for playerInfo in self.playersInfo:
 				
 				if playerInfo.activeTurn:
 					activePlayers += 1
+					
+				if playerInfo.isDealer:
+					numDealers += 1
 				
 				if not playerInfo.id in ids:
 					ids.append(playerInfo.id)
@@ -68,6 +72,10 @@ class State():
 					
 			#Someone must be the active player!		
 			if activePlayers != 1:
+				return False
+				
+			#Someone must be the dealer!	
+			if numDealers != 1:
 				return False
 				
 			#All ids must be unique	
@@ -111,10 +119,10 @@ if __name__ == '__main__':
 	#UNIT TESTS
 	print "Testing constructors."
 	
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -123,10 +131,10 @@ if __name__ == '__main__':
 	assert state.isValid()
 	
 	#Here the turn orders aren't well formed
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -135,10 +143,10 @@ if __name__ == '__main__':
 	assert not state.isValid()
 	
 	#Here the ids aren't unique
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(0, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(0, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -147,10 +155,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here there is no active player
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -159,10 +167,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here there are too many community cards
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -174,10 +182,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here one of the community cards is unknown
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", 1, 100, 5, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -188,10 +196,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here a busted player has pocket cards
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -202,10 +210,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here a busted player has cash
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", -1, 10, 0, [], False)
-	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", -1, 10, 0, [], False, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -216,10 +224,10 @@ if __name__ == '__main__':
 	assert not state.isValid()			
 
 	#Here turn orders don't match
-	player1 = PlayerInfo(0, "John", 1, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False)
-	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
+	player1 = PlayerInfo(0, "John", 1, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False, False)
+	player3 = PlayerInfo(2, "Hamm", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player4 = PlayerInfo(3, "Gunn", 3, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -230,10 +238,10 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here a busted player is the active player
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False)			
-	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], True)
-	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
-	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, False)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False, True)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True, False)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
 	
 	infos = [player1, player2, player3, player4]
 	
@@ -244,10 +252,38 @@ if __name__ == '__main__':
 	assert not state.isValid()	
 	
 	#Here we have more than one active player
-	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], True)			
-	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False)
-	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], True)
-	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False)
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], True, True)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	
+	infos = [player1, player2, player3, player4]
+	
+	cards = [card.Card("H", "A"),card.Card("S", "A"),card.Card("C", "3")]
+	
+	state = State(infos, cards)	
+	
+	assert not state.isValid()
+	
+	#Here we have more than one dealer
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], True, True)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], True, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
+	
+	infos = [player1, player2, player3, player4]
+	
+	cards = [card.Card("H", "A"),card.Card("S", "A"),card.Card("C", "3")]
+	
+	state = State(infos, cards)	
+	
+	assert not state.isValid()		
+
+	#Here we have no dealer
+	player1 = PlayerInfo(0, "John", 0, 100, 10, [card.Card("H", "3"), card.Card("S", "2")], False, True)			
+	player2 = PlayerInfo(1, "Susy", -1, 0, 0, [], False, False)
+	player3 = PlayerInfo(2, "Hamm", 1, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, True)
+	player4 = PlayerInfo(3, "Gunn", 2, 100, 0, [card.Card("?", "?"), card.Card("?", "?")], False, False)
 	
 	infos = [player1, player2, player3, player4]
 	

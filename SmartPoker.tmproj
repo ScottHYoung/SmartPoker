@@ -3,46 +3,90 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>interface.py</string>
+	<string>deck.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
-			<string>README.txt</string>
+			<string>deck.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-13T11:26:38Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>settings.py</string>
-			<key>lastUsed</key>
-			<date>2014-06-13T11:44:46Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>interface.py</string>
-			<key>lastUsed</key>
-			<date>2014-06-13T11:44:46Z</date>
+			<date>2014-06-14T08:05:51Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
+			<string>README.txt</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T08:05:51Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>state.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T07:47:32Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>settings.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T08:02:00Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>decision.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T07:59:23Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T08:04:32Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>game.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T08:05:27Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>interface.py</string>
+			<key>lastUsed</key>
+			<date>2014-06-14T07:40:48Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
 			<string>card.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-13T11:29:27Z</date>
+			<date>2014-06-14T07:33:56Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>smartPoker.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-13T11:26:42Z</date>
+			<date>2014-06-14T07:33:22Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
+		<key>README.txt</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>13</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>card.py</key>
 		<dict>
 			<key>caret</key>
@@ -50,7 +94,7 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>19</integer>
+				<integer>0</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
@@ -61,45 +105,101 @@
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>77</integer>
+				<integer>76</integer>
 				<key>line</key>
-				<integer>24</integer>
+				<integer>9</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>19</integer>
+				<integer>0</integer>
 			</dict>
+		</dict>
+		<key>decision.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>15</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>5</integer>
+		</dict>
+		<key>deck.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>game.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>13</integer>
 		</dict>
 		<key>interface.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>16</integer>
+				<integer>38</integer>
 				<key>line</key>
-				<integer>42</integer>
+				<integer>9</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>26</integer>
+			<integer>25</integer>
+		</dict>
+		<key>player.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>16</integer>
+				<key>line</key>
+				<integer>53</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>7</integer>
 		</dict>
 		<key>settings.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>26</integer>
+				<integer>33</integer>
 				<key>line</key>
-				<integer>59</integer>
+				<integer>12</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>9</integer>
+			<integer>15</integer>
 		</dict>
 		<key>smartPoker.py</key>
 		<dict>
@@ -115,13 +215,33 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>state.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>102</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>230</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
+		<string>README.txt</string>
+		<string>deck.py</string>
 		<string>smartPoker.py</string>
-		<string>card.py</string>
 		<string>interface.py</string>
+		<string>game.py</string>
+		<string>player.py</string>
+		<string>decision.py</string>
 		<string>settings.py</string>
+		<string>state.py</string>
+		<string>card.py</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

@@ -11,7 +11,7 @@
 #
 #---------------------------------------------------------------------------
 
-import settings, decision, state, card, interface, player
+import settings, decision, state, card, interface, player, deck
 
 #---------------------------------------------------------------------------
 #	Game class
@@ -40,4 +40,53 @@ class Game():
 			newPlayer.turnOrder = i
 			if i == 0:
 				newPlayer.activeTurn = True
+				newPlayer.isDealer = True
 			self.players.append(newPlayer)
+		
+		self.smallBlind = self.settings.smallBlind
+		self.bigBlind = 2 * self.smallBlind
+		self.currentDealer = 0
+		self.currentActive = 0
+		self.numInGame = self.settings.numPlayers
+		self.numInHand = self.settings.numPlayers
+		
+		self.newHand()
+		
+	#---------------------------------------------------------------------------
+	#	newHand()
+	#
+	#	Sets the game up for a new hand, making a new deck, dealing the pocket
+	#	cards to all players still in the game, subtracting the blinds
+	#---------------------------------------------------------------------------
+	def newHand(self):
+		
+		#Make a new deck and shuffle it
+		self.deck = deck.Deck()
+		self.deck.shuffle
+		
+		#Deal the pocket cards
+		for player in self.players
+			player.pocket = [self.deck.draw(), self.deck.draw()]
+			
+			#Do some quick checks to make sure the endHand procedure didn't make any errors
+			assert player.pot == 0
+			assert player.pocket[0] != None and player.pocket[1] != None
+			
+		#Subtract the blinds into the pot
+		assert self.numInGame >= 2
+		
+		if self.numInGame == 2:
+			#Dealer is small blind, next player is big blind
+			
+			#CONTINUE WORKING HERE
+			
+			pass
+		
+			
+			
+			
+#========================================
+#	TESTS
+#========================================	
+
+if __name__ == '__main__':			
