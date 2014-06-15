@@ -21,6 +21,7 @@
 
 from player import PlayerInfo
 import card
+import decision
 
 #---------------------------------------------------------------------------
 #	State class
@@ -107,6 +108,26 @@ class State():
 			
 		#Passed all checks, is a valid game state	
 		return True
+		
+	#---------------------------------------------------------------------------
+	#	decisionOptions
+	#
+	#	Determines which moves are valid for a player, given the state of the game
+	#	Returns a list of decisions without amounts
+	#---------------------------------------------------------------------------	
+	def decisionOptions(self, playerID):
+		
+		return [decision.Decision("WAIT")]
+		
+	#---------------------------------------------------------------------------
+	#	isValidDecision
+	#
+	#	Determines whether a given decision is an available option for the player
+	#---------------------------------------------------------------------------	
+	def isValidDecision(self, playerID, decision):
+
+		return True	
+			
 						
 
 

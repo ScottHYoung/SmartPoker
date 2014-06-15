@@ -10,7 +10,9 @@ the progress!
 
 To Do:
 
-- Finish coding newHand() function
-- Player/PlayerInfo unit tests
+- Finish nextAction() function
+- Finish State.decisionOptions()
+- Finish State.isValidDecision()
+- Finish drawState() procedure for the basic interface
 - Setup basic terminal interface for play
-- Add human/AI classes
+- Add AI class

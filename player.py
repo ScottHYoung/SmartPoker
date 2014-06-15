@@ -26,7 +26,7 @@ class Player():
 		
 		self.id = ID
 		self.name = name
-		self.bank = chips
+		self.bank = bank
 		
 		self.pot = 0
 		self.turnOrder = -1
@@ -34,6 +34,7 @@ class Player():
 		self.pocket = []
 		self.activeTurn = False	
 		self.miscInfo = []
+		self.hasRevealed = False
 		
 	#---------------------------------------------------------------------------
 	#	getInfo()
@@ -53,6 +54,20 @@ class Player():
 		
 		default = decision.Decision()
 		return default
+		
+	#---------------------------------------------------------------------------
+	#	addToPot(amount)
+	#
+	#	Transfers the amount from the bank to the pot. If the amount is too large
+	#	transfers nothing and returns False. Otherwise returns True.
+	#---------------------------------------------------------------------------		
+	def addToPot(self, amount):
+	
+		if amount > self.bank:
+			return False
+		else:
+			self.bank -= amount
+			self.pot += amount
 		
 #---------------------------------------------------------------------------
 #	PlayerInfo class

@@ -37,4 +37,4 @@ class Decision():
 		self.name = name.upper()
 		self.value = value
 		
-		 
+	 

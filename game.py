@@ -11,7 +11,7 @@
 #
 #---------------------------------------------------------------------------
 
-import settings, decision, state, card, interface, player, deck
+import settings, decision, state, card, interface, player, deck, human
 
 #---------------------------------------------------------------------------
 #	Game class
@@ -26,14 +26,14 @@ class Game():
 	#---------------------------------------------------------------------------	
 	def __init__(self, theSettings, theInterface):
 		
-		self.interface = theInterface
 		self.settings = theSettings
+		self.players = []
 		
-		for i in self.settings.numPlayers:
+		for i in range(self.settings.numPlayers):
 			
 			#Change these to human/AI later
 			if i < self.settings.numAIs:
-				newPlayer = player.Player(i, "Test"+str(i), self.settings.numChips)
+				newPlayer = human.Human(theInterface, i, "Test"+str(i), self.settings.numChips)
 			else:
 				newPlayer = player.Player(i, "Test"+str(i), self.settings.numChips)
 				
@@ -49,6 +49,7 @@ class Game():
 		self.currentActive = 0
 		self.numInGame = self.settings.numPlayers
 		self.numInHand = self.settings.numPlayers
+		self.communityCards = []
 		
 		self.newHand()
 		
@@ -65,7 +66,7 @@ class Game():
 		self.deck.shuffle
 		
 		#Deal the pocket cards
-		for player in self.players
+		for player in self.players:
 			player.pocket = [self.deck.draw(), self.deck.draw()]
 			
 			#Do some quick checks to make sure the endHand procedure didn't make any errors
@@ -75,18 +76,108 @@ class Game():
 		#Subtract the blinds into the pot
 		assert self.numInGame >= 2
 		
+		bigBlinds = 0
+		smallBlinds = 0
+		
 		if self.numInGame == 2:
 			#Dealer is small blind, next player is big blind
 			
-			#CONTINUE WORKING HERE
+			for player in self.players:
+				if player.isDealer:
+					if not player.addToPot(self.smallBlind):
+						player.addToPot(player.bank)
+					smallBlinds += 1
+				#Big blind is the other live player
+				elif player.turnOrder != -1:
+					if not player.addToPot(self.bigBlind):
+						player.addToPot(player.bank)
+					bigBlinds += 1
+						
+		else:
+			#Dealer position + 1 = SB, Dealer position + 2 = LB
 			
-			pass
+			for player in self.players:
+				if player.turnOrder == ((self.currentDealer + 1) % self.numInGame):
+					if not player.addToPot(self.smallBlind):
+						player.addToPot(player.bank)
+					smallBlinds += 1
+				
+				if player.turnOrder == ((self.currentDealer + 2) % self.numInGame):
+					if not player.addToPot(self.bigBlind):
+						player.addToPot(player.bank)
+					bigBlinds += 1
 		
+		#Make sure we put in the correct amount			
+		assert bigBlinds == 1 and smallBlinds == 1
+		
+		#Set the active player	
+		for player in self.players:
+			if player.turnOrder == ((self.currentDealer + 3) % self.numInGame):
+				player.isActive = True
+				currentActive = player.turnOrder
+			else:
+				player.isActive = False				
 			
+		#Reset the community cards
+		self.communityCards = []	
+			
+		#Start the game
+		self.nextAction()
+		
+	#---------------------------------------------------------------------------
+	#	nextAction()
+	#
+	#	Moves the game to the next point where a decision is needed from the
+	#	players.
+	#---------------------------------------------------------------------------
+	def nextAction(self):
+		
+		decision = self.passToPlayers()
+		
+		#Do stuff with that decision
+		
+	#---------------------------------------------------------------------------
+	#	passToPlayers()
+	#
+	#	Cleans the game states and passes them to each individual player.
+	#---------------------------------------------------------------------------	
+	def passToPlayers(self):
+			
+		for givenPlayer in self.players:		
+
+			#Clean game state
+			cleanPlayersInfo = []
+
+			for player in self.players:
+				info = player.getInfo()
+				if not player.hasRevealed and player.id != givenPlayer.id:
+					info.pocket = [card.Card("?", "?"), card.Card("?", "?")]
+				cleanPlayersInfo.append(info)
+			
+			gameState = state.State(cleanPlayersInfo, self.communityCards)
+			
+			decision = givenPlayer.giveDecision(gameState)
+			
+			if not givenPlayer.isActive:
+				return decision
+			else:
+				assert decision.name == "WAIT"			
 			
 			
 #========================================
 #	TESTS
 #========================================	
 
-if __name__ == '__main__':			
+if __name__ == '__main__':
+	
+	print "Testing constructor..."
+	
+	newGame = Game(settings.Settings(), interface.Interface())	
+	
+	assert len(newGame.players) == 4
+	
+	for player in newGame.players:
+		playerInfo = player.getInfo()
+		assert playerInfo.isValid()
+	
+	print "Test complete."		
