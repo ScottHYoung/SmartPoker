@@ -10,9 +10,10 @@ the progress!
 
 To Do:
 
+- Determine whether to split up interface class or how to handle circular dependencies
 - Finish nextAction() function
 - Finish State.decisionOptions()
 - Finish State.isValidDecision()
-- Finish drawState() procedure for the basic interface
+- Add part for raising in basicInterface
 - Setup basic terminal interface for play
 - Add AI class

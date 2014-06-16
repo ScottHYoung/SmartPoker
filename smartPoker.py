@@ -13,14 +13,7 @@
 #	possibly Linux running in the terminal.
 #---------------------------------------------------------------------------
 
-import os
+import basicInterface, game
 
-print "Hello World!"
-
-for z in range(2):
-	for i in range(10):
-		myText = raw_input()
-
-		print myText
-	
-	os.system("clear")
+theInterface = basicInterface.basicInterface()
+newGame = game.Game()
