@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>README.txt</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:56:35Z</date>
+			<date>2014-06-21T06:11:04Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -18,19 +18,19 @@
 			<key>filename</key>
 			<string>smartPoker.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:53:16Z</date>
+			<date>2014-06-21T05:50:08Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>deck.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:56:35Z</date>
+			<date>2014-06-21T05:11:29Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>state.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:42:05Z</date>
+			<date>2014-06-21T05:59:23Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -42,37 +42,37 @@
 			<key>filename</key>
 			<string>decision.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-15T08:04:41Z</date>
+			<date>2014-06-21T06:11:04Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>player.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:44:38Z</date>
+			<date>2014-06-21T05:37:19Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>basicInterface.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:47:31Z</date>
+			<date>2014-06-21T05:59:30Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>game.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:46:59Z</date>
+			<date>2014-06-21T06:09:11Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>interface.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:33:25Z</date>
+			<date>2014-06-21T05:35:29Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>card.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-16T10:54:20Z</date>
+			<date>2014-06-21T05:42:06Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -90,9 +90,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>57</integer>
+				<integer>26</integer>
 				<key>line</key>
-				<integer>12</integer>
+				<integer>21</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -104,14 +104,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>66</integer>
+				<integer>59</integer>
 				<key>line</key>
-				<integer>46</integer>
+				<integer>95</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>33</integer>
+			<integer>103</integer>
 		</dict>
 		<key>card.py</key>
 		<dict>
@@ -132,14 +132,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>38</integer>
+				<integer>32</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>9</integer>
+			<integer>7</integer>
 		</dict>
 		<key>deck.py</key>
 		<dict>
@@ -153,21 +153,21 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>22</integer>
+			<integer>16</integer>
 		</dict>
 		<key>game.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>33</integer>
+				<integer>29</integer>
 				<key>line</key>
-				<integer>178</integer>
+				<integer>140</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>155</integer>
+			<integer>77</integer>
 		</dict>
 		<key>human.py</key>
 		<dict>
@@ -244,14 +244,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>27</integer>
+				<integer>42</integer>
 				<key>line</key>
-				<integer>286</integer>
+				<integer>171</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>286</integer>
+			<integer>130</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>

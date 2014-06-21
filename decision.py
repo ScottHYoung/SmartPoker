@@ -31,8 +31,6 @@ class Decision():
 				name == "RAISE" or
 				name == "FORFEIT" or
 				name == "GAMEQUIT")
-				
-		assert (name != "RAISE" or value > 0)
 		
 		self.name = name.upper()
 		self.value = value

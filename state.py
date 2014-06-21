@@ -117,7 +117,38 @@ class State():
 	#---------------------------------------------------------------------------	
 	def decisionOptions(self, playerID):
 		
-		return [decision.Decision("WAIT")]
+		options = []
+		
+		playerInfo = None
+		mostInPot = 0
+		for playerInfo in self.playersInfo:
+			if playerInfo.pot > mostInPot:
+				mostInPot = playerInfo.pot
+			if playerInfo.id == playerID:
+				thisPlayer = playerInfo
+				
+		assert playerInfo != None
+				
+		options.append(decision.Decision("GAMEQUIT"))
+		options.append(decision.Decision("FORFEIT"))
+		
+		if thisPlayer.isActive:
+			
+			#Unmatched raises in pot and we're not all in
+			if thisPlayer.pot < mostInPot and thisPlayer.bank > 0 :
+				options.append(decision.Decision("CALL"))
+				options.append(decision.Decision("FOLD"))
+			else:
+				options.append(decision.Decision("CHECK"))
+				
+			#We can also raise the stakes if we have the money (otherwise all we can do is call)	
+			if thisPlayer.bank > mostInPot-thisPlayer.pot :
+				options.append(decision.Decision("RAISE"))
+			
+		else:
+			options.append(decision.Decision("WAIT"))
+			
+		return options
 		
 	#---------------------------------------------------------------------------
 	#	isValidDecision
@@ -126,7 +157,27 @@ class State():
 	#---------------------------------------------------------------------------	
 	def isValidDecision(self, playerID, decision):
 
-		return True	
+		options = self.decisionOptions(playerID)
+		
+		thisPlayer = None
+		for playerInfo in self.playersInfo:
+			if playerID == playerInfo.id:
+				thisPlayer = playerInfo	
+		assert thisPlayer != None
+		
+		isValid = False
+		for option in options:
+			if option.name == decision.name:
+				
+				if option.name == "RAISE" and decision.value > thisPlayer.bank:
+					isValid = False
+				else:
+					isValid = True
+					
+		return isValid
+				
+				
+		
 			
 						
 

@@ -58,16 +58,33 @@ class BasicInterface(interface.Interface):
 		
 		#Now get the user prompt
 		theDecision = decision.Decision("WAIT")
+		
+		print " "
+		print "Your options:"
+		
 		while True:
 			
 			#Now display the user options
-			decisions = []#theState.getDecisionOptions(self.id)
+			decisions = theState.decisionOptions(self.id)
 			for d in decisions:
-				print d.name			
+				print d.name	
+				
+		
+			print " "
 			
-			decisionText = raw_input()
+			rawText = raw_input()
 			
-			decisionText = decisionText.upper()
+			splitText = rawText.split()
+			
+			decisionText = splitText[0].upper()
+			
+			if len(splitText) > 1:
+				try:
+					decisionValue = int(splitText[1])
+				except ValueError:
+					decisionValue = 0
+			else:
+				decisionValue = 0
 			
 			if decisionText == "W" or decisionText == "WAIT":
 				theDecision = decision.Decision("WAIT")
@@ -76,8 +93,7 @@ class BasicInterface(interface.Interface):
 			elif decisionText == "C" or decisionText == "CHECK":
 				theDecision = decision.Decision("CHECK")			
 			elif decisionText == "R" or decisionText == "RAISE":
-				theDecision = decision.Decision("RAISE")
-				# EXPAND THIS TO GRAB VALUE
+				theDecision = decision.Decision("RAISE", decisionValue)
 			elif decisionText == "REVEAL":
 				theDecision = decision.Decision("REVEAL")
 			elif decisionText == "FORFEIT":

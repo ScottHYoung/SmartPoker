@@ -10,10 +10,16 @@ the progress!
 
 To Do:
 
-- Figure out why random.shuffle is producing same results
-- Finish nextAction() function
-- Finish State.decisionOptions()
-- Finish State.isValidDecision()
-- Add part for raising in basicInterface
-- Setup basic terminal interface for play
+- Get rid of turnOrder (replace with id and isInGame, isInHand)
+- Finish nextAction() function:
+	- Process actions
+		- Check (nothing)
+		- Call (xfer money)
+		- Raise (xfer money)
+		- Fold (switch to !isInHand)
+		- Forfeit (switch to !isInGame & !isInHand)
+	- Determine if hand is still going, and if not, redistribute pots to winner and endHand()
+	- Increment active player
+	- Determine if betting round has ended, and nextBettingRound()
+	
 - Add AI class

@@ -78,7 +78,7 @@ class Game():
 		
 		#Make a new deck and shuffle it
 		self.deck = deck.Deck()
-		self.deck.shuffle
+		self.deck.shuffle()
 		
 		#Deal the pocket cards
 		for player in self.players:
@@ -135,6 +135,10 @@ class Game():
 			
 		#Reset the community cards
 		self.communityCards = []	
+		
+		#Betting begins at round 0
+		self.bettingRound = 0
+		self.numVisitsThisRound = 0
 			
 		#Start the game
 		self.nextAction()
@@ -176,7 +180,7 @@ class Game():
 			if givenPlayer.isActive:
 				return decision
 			else:
-				assert decision.name == "WAIT"	
+				assert (decision.name == "WAIT"	or decision.name == "FORFEIT" or decision.name == "GAMEQUIT")
 				
 		#Something went wrong and now we don't have a decision.		
 		assert False		
