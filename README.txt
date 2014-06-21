@@ -10,7 +10,7 @@ the progress!
 
 To Do:
 
-- Determine whether to split up interface class or how to handle circular dependencies
+- Figure out why random.shuffle is producing same results
 - Finish nextAction() function
 - Finish State.decisionOptions()
 - Finish State.isValidDecision()

@@ -15,5 +15,7 @@
 
 import basicInterface, game
 
-theInterface = basicInterface.basicInterface()
-newGame = game.Game()
+SetupInterface = basicInterface.BasicInterface()
+theSettings = SetupInterface.setupGame()
+
+newGame = game.Game(theSettings,basicInterface.BasicInterface)

@@ -56,7 +56,7 @@ class State():
 			turnOrders = []
 			for playerInfo in self.playersInfo:
 				
-				if playerInfo.activeTurn:
+				if playerInfo.isActive:
 					activePlayers += 1
 					
 				if playerInfo.isDealer:

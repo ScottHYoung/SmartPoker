@@ -32,7 +32,7 @@ class Player():
 		self.turnOrder = -1
 		self.isDealer = False
 		self.pocket = []
-		self.activeTurn = False	
+		self.isActive = False	
 		self.miscInfo = []
 		self.hasRevealed = False
 		
@@ -43,7 +43,8 @@ class Player():
 	#---------------------------------------------------------------------------
 	def getInfo(self):
 		
-		return PlayerInfo(self.id, self.name, self.turnOrder, self.bank, self.pot, self.pocket, self.activeTurn, self.miscInfo)
+		return PlayerInfo(self.id, self.name, self.turnOrder, self.bank, self.pot, self.pocket, 
+						  self.isDealer, self.isActive, self.miscInfo)
 
 	#---------------------------------------------------------------------------
 	#	giveDecision(state)
@@ -68,6 +69,7 @@ class Player():
 		else:
 			self.bank -= amount
 			self.pot += amount
+			return True
 		
 #---------------------------------------------------------------------------
 #	PlayerInfo class
@@ -80,10 +82,10 @@ class PlayerInfo():
 	#---------------------------------------------------------------------------
 	#	Constructor
 	#
-	#	Takes an ID, name, turn order, bank, pot contribution, pocket cards, activeTurn
+	#	Takes an ID, name, turn order, bank, pot contribution, pocket cards, isActive
 	#	and miscInfo string array
 	#---------------------------------------------------------------------------
-	def __init__(self, ID, name, turnOrder, bank, pot, pocket, isDealer, activeTurn, miscInfo = []):
+	def __init__(self, ID, name, turnOrder, bank, pot, pocket, isDealer, isActive, miscInfo = []):
 		
 		self.id = ID
 		self.name = name
@@ -92,7 +94,7 @@ class PlayerInfo():
 		self.pot = pot
 		self.pocket = pocket
 		self.isDealer = isDealer
-		self.activeTurn = activeTurn
+		self.isActive = isActive
 		self.miscInfo = miscInfo
 		
 	#---------------------------------------------------------------------------
@@ -110,7 +112,7 @@ class PlayerInfo():
 				return False
 			if self.pot > 0:
 				return False
-			if self.activeTurn:
+			if self.isActive:
 				return False
 			if self.isDealer:
 				return False

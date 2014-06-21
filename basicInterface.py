@@ -8,7 +8,7 @@
 #	time the player requires a decision.
 #---------------------------------------------------------------------------
 
-import os, interface, state, decision
+import os, interface, state, decision, settings
 
 #---------------------------------------------------------------------------
 # basicInterface
@@ -19,7 +19,7 @@ class BasicInterface(interface.Interface):
 	#---------------------------------------------------------------------------
 	#	Constructor
 	#---------------------------------------------------------------------------
-	def __init__(self, playerID):
+	def __init__(self, playerID = -1):
 		
 		interface.Interface.__init__(self)
 		self.id = playerID
@@ -40,8 +40,18 @@ class BasicInterface(interface.Interface):
 	#---------------------------------------------------------------------------
 	def getDecision(self, theState):
 		
-		#First clear the screen
-		os.system("clear")
+		#-------AUTO PUSH "WAIT" FOR INACTIVE PLAYERS-------
+		#
+		#---------------------------------------------------
+		for playersInfo in theState.playersInfo:
+			if playersInfo.id == self.id and playersInfo.isActive == False:
+				return(decision.Decision("WAIT"))
+		#---------------------------------------------------
+		#
+		#---------------------------------------------------
+		
+		#First clear the screen - TURNED OFF
+		#os.system("clear")
 		
 		#Now display the game state
 		self.drawState(theState)
@@ -51,7 +61,7 @@ class BasicInterface(interface.Interface):
 		while True:
 			
 			#Now display the user options
-			decisions = theState.getDecisionOptions(self.id)
+			decisions = []#theState.getDecisionOptions(self.id)
 			for d in decisions:
 				print d.name			
 			
@@ -109,9 +119,15 @@ class BasicInterface(interface.Interface):
 				playerStr += "D"
 			else:
 				playerStr += " "
+				
+			playerStr += " " 
 			
 			if p.turnOrder >= 0:	
 				playerStr += p.name
+				
+				playerStr += "\t\t"
+				
+				playerStr += self.cardString(p.pocket[0])+" "+self.cardString(p.pocket[1])
 			
 				playerStr += "\t\t"
 				playerStr += str(p.bank)

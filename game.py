@@ -24,22 +24,37 @@ class Game():
 	#	Passed a settings object the game will initialize the game settings to
 	#	begin playing poker.
 	#---------------------------------------------------------------------------	
-	def __init__(self, theSettings, theInterface):
+	def __init__(self, theSettings, theInterfaceConstructor):
 		
 		self.settings = theSettings
 		self.players = []
 		
 		for i in range(self.settings.numPlayers):
 			
-			#Change these to human/AI later
-			if i < self.settings.numAIs:
-				newPlayer = human.Human(theInterface, i, "Test"+str(i), self.settings.numChips)
+			#Make some nicer default names
+			if i == 0:
+				nameGen = "John"
+			elif i == 1:
+				nameGen = "Suzy"
+			elif i == 2:
+				nameGen = "Fred"
+			elif i == 3:
+				nameGen = "Doug"
 			else:
-				newPlayer = player.Player(i, "Test"+str(i), self.settings.numChips)
+				nameGen = "Player"+str(i)
+			
+			#Change these to human/AI later
+			if i < (self.settings.numPlayers - self.settings.numAIs):
+					
+				newPlayer = human.Human(theInterfaceConstructor(i), i, nameGen, self.settings.numChips)
+			else:
+				
+				#Currently a Human, replace this with the AI class later
+				newPlayer = human.Human(theInterfaceConstructor(i), i, nameGen, self.settings.numChips)
 				
 			newPlayer.turnOrder = i
 			if i == 0:
-				newPlayer.activeTurn = True
+				newPlayer.isActive = True
 				newPlayer.isDealer = True
 			self.players.append(newPlayer)
 		
@@ -114,7 +129,7 @@ class Game():
 		for player in self.players:
 			if player.turnOrder == ((self.currentDealer + 3) % self.numInGame):
 				player.isActive = True
-				currentActive = player.turnOrder
+				self.currentActive = player.turnOrder
 			else:
 				player.isActive = False				
 			
@@ -158,10 +173,13 @@ class Game():
 			
 			decision = givenPlayer.giveDecision(gameState)
 			
-			if not givenPlayer.isActive:
+			if givenPlayer.isActive:
 				return decision
 			else:
-				assert decision.name == "WAIT"			
+				assert decision.name == "WAIT"	
+				
+		#Something went wrong and now we don't have a decision.		
+		assert False		
 			
 			
 #========================================
