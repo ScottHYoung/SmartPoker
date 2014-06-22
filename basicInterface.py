@@ -40,15 +40,20 @@ class BasicInterface(interface.Interface):
 	#---------------------------------------------------------------------------
 	def getDecision(self, theState):
 		
-		#-------AUTO PUSH "WAIT" FOR INACTIVE PLAYERS-------
-		#
-		#---------------------------------------------------
+
 		for playersInfo in theState.playersInfo:
-			if playersInfo.id == self.id and playersInfo.isActive == False:
-				return(decision.Decision("WAIT"))
-		#---------------------------------------------------
-		#
-		#---------------------------------------------------
+			if playersInfo.id == self.id:
+			
+				thisPlayerInfo = playersInfo
+			
+				if playersInfo.isActive == False:
+					#-------AUTO PUSH "WAIT" FOR INACTIVE PLAYERS-------
+					#
+					#---------------------------------------------------
+					return(decision.Decision("WAIT"))
+					#---------------------------------------------------
+					#
+					#---------------------------------------------------
 		
 		#First clear the screen - TURNED OFF
 		#os.system("clear")
@@ -67,7 +72,15 @@ class BasicInterface(interface.Interface):
 			#Now display the user options
 			decisions = theState.decisionOptions(self.id)
 			for d in decisions:
-				print d.name	
+				
+				callAmount = theState.getCallAmount(thisPlayerInfo)
+				if d.name == "CALL":
+					dText = d.name + " (" + str(callAmount) + ")"
+				elif d.name == "RAISE" and callAmount > 0:
+					dText = "RAISE (+" + str(callAmount) + " TO CALL)"
+				else:
+					dText = d.name
+				print dText	
 				
 		
 			print " "
@@ -138,7 +151,7 @@ class BasicInterface(interface.Interface):
 				
 			playerStr += " " 
 			
-			if p.turnOrder >= 0:	
+			if p.isInGame:	
 				playerStr += p.name
 				
 				playerStr += "\t\t"

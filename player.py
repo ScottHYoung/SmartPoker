@@ -29,7 +29,8 @@ class Player():
 		self.bank = bank
 		
 		self.pot = 0
-		self.turnOrder = -1
+		self.isInGame = True
+		self.isInHand = True
 		self.isDealer = False
 		self.pocket = []
 		self.isActive = False	
@@ -43,7 +44,7 @@ class Player():
 	#---------------------------------------------------------------------------
 	def getInfo(self):
 		
-		return PlayerInfo(self.id, self.name, self.turnOrder, self.bank, self.pot, self.pocket, 
+		return PlayerInfo(self.id, self.name, self.isInGame, self.isInHand, self.bank, self.pot, self.pocket, 
 						  self.isDealer, self.isActive, self.miscInfo)
 
 	#---------------------------------------------------------------------------
@@ -85,11 +86,12 @@ class PlayerInfo():
 	#	Takes an ID, name, turn order, bank, pot contribution, pocket cards, isActive
 	#	and miscInfo string array
 	#---------------------------------------------------------------------------
-	def __init__(self, ID, name, turnOrder, bank, pot, pocket, isDealer, isActive, miscInfo = []):
+	def __init__(self, ID, name, isInGame, isInHand, bank, pot, pocket, isDealer, isActive, miscInfo = []):
 		
 		self.id = ID
 		self.name = name
-		self.turnOrder = turnOrder
+		self.isInGame = isInGame
+		self.isInHand = isInHand
 		self.bank = bank
 		self.pot = pot
 		self.pocket = pocket
@@ -103,11 +105,8 @@ class PlayerInfo():
 	#	Determines whether player info is valid
 	#---------------------------------------------------------------------------	
 	def isValid(self):
-		
-		if self.turnOrder < -1:
-			return False
 			
-		if self.turnOrder == -1:
+		if not self.isInGame:
 			if self.bank > 0:
 				return False
 			if self.pot > 0:

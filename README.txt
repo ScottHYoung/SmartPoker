@@ -10,16 +10,8 @@ the progress!
 
 To Do:
 
-- Get rid of turnOrder (replace with id and isInGame, isInHand)
-- Finish nextAction() function:
-	- Process actions
-		- Check (nothing)
-		- Call (xfer money)
-		- Raise (xfer money)
-		- Fold (switch to !isInHand)
-		- Forfeit (switch to !isInGame & !isInHand)
-	- Determine if hand is still going, and if not, redistribute pots to winner and endHand()
-	- Increment active player
-	- Determine if betting round has ended, and nextBettingRound()
-	
+- Finish incrementActivePlayer()
+- Finish newBettingRound()
+- Finish endHand()
+- Create Game test suite	
 - Add AI class

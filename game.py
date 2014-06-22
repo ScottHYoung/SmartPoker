@@ -52,7 +52,6 @@ class Game():
 				#Currently a Human, replace this with the AI class later
 				newPlayer = human.Human(theInterfaceConstructor(i), i, nameGen, self.settings.numChips)
 				
-			newPlayer.turnOrder = i
 			if i == 0:
 				newPlayer.isActive = True
 				newPlayer.isDealer = True
@@ -62,6 +61,8 @@ class Game():
 		self.bigBlind = 2 * self.smallBlind
 		self.currentDealer = 0
 		self.currentActive = 0
+		self.bettingRound = 0
+		self.numVisits = 0
 		self.numInGame = self.settings.numPlayers
 		self.numInHand = self.settings.numPlayers
 		self.communityCards = []
@@ -103,7 +104,7 @@ class Game():
 						player.addToPot(player.bank)
 					smallBlinds += 1
 				#Big blind is the other live player
-				elif player.turnOrder != -1:
+				elif player.isInGame:
 					if not player.addToPot(self.bigBlind):
 						player.addToPot(player.bank)
 					bigBlinds += 1
@@ -112,12 +113,12 @@ class Game():
 			#Dealer position + 1 = SB, Dealer position + 2 = LB
 			
 			for player in self.players:
-				if player.turnOrder == ((self.currentDealer + 1) % self.numInGame):
+				if player.id == ((self.currentDealer + 1) % self.numInGame):
 					if not player.addToPot(self.smallBlind):
 						player.addToPot(player.bank)
 					smallBlinds += 1
 				
-				if player.turnOrder == ((self.currentDealer + 2) % self.numInGame):
+				if player.id == ((self.currentDealer + 2) % self.numInGame):
 					if not player.addToPot(self.bigBlind):
 						player.addToPot(player.bank)
 					bigBlinds += 1
@@ -127,9 +128,9 @@ class Game():
 		
 		#Set the active player	
 		for player in self.players:
-			if player.turnOrder == ((self.currentDealer + 3) % self.numInGame):
+			if player.id == ((self.currentDealer + 3) % self.numInGame):
 				player.isActive = True
-				self.currentActive = player.turnOrder
+				self.currentActive = player.id
 			else:
 				player.isActive = False				
 			
@@ -138,7 +139,7 @@ class Game():
 		
 		#Betting begins at round 0
 		self.bettingRound = 0
-		self.numVisitsThisRound = 0
+		self.numVisits = 0
 			
 		#Start the game
 		self.nextAction()
@@ -151,9 +152,83 @@ class Game():
 	#---------------------------------------------------------------------------
 	def nextAction(self):
 		
-		decision = self.passToPlayers()
+		theDecision = self.passToPlayers()
 		
-		#Do stuff with that decision
+		activePlayer = self.getActivePlayer()
+		
+		checkIfHandOver = False
+		
+		if theDecision.name == "GAMEQUIT":
+			raise SystemExit
+			
+		elif theDecision.name == "FORFEIT":
+			activePlayer.bank = 0
+			activePlayer.isInHand = False
+			activePlayer.isInGame = False
+			checkIfHandOver = True
+			
+		elif theDecision.name == "FOLD":
+			activePlayer.isInHand = False
+			checkIfHandOver = True
+		
+		elif theDecision.name == "CHECK":
+			pass
+			
+		elif theDecision.name == "CALL":
+			amountToCall = self.getCallAmount(activePlayer)
+			if not activePlayer.addToPot(amountToCall):
+				activePlayer.addToPot(activePlayer.bank)
+				
+		elif theDecision.name == "RAISE":
+			amountToCall = self.getCallAmount(activePlayer)
+			amountToRaise = theDecision.value
+			if not activePlayer.addToPot(amountToCall + amountToRaise):
+				#Checks should have been in place to ensure we can't raise more than we have
+				assert False
+				
+		else:
+			
+			#Currently we shouldn't be able to do any other actions
+			assert False
+			
+		if checkIfHandOver:
+			numInHand = 0
+			for p in self.players:
+				if p.isInHand:
+					numInHand += 1
+			
+			if numInHand <= 1:
+				
+				#self.endHand()
+		
+		
+		
+		newBettingRound = self.incrementActivePlayer()
+		
+		if newBettingRound:
+			
+			self.newBettingRound()	
+			
+	#---------------------------------------------------------------------------
+	#	incrementActivePlayer()
+	#
+	#	Moves to the next active player in sequence, increments the number of
+	#	visits and compares whether a full loop in the betting has finished.
+	#	Returns true if the betting round has finished.
+	#---------------------------------------------------------------------------		
+	def incrementActivePlayer(self):
+		
+		pass
+		
+	#---------------------------------------------------------------------------
+	#	newBettingRound()
+	#
+	#	Resets the numVisits, increments the bettingRound, changes to the correct
+	#	active player, deals any community cards and/or ends the hand
+	#---------------------------------------------------------------------------		
+	def newBettingRound(self):
+
+		pass			
 		
 	#---------------------------------------------------------------------------
 	#	passToPlayers()
@@ -183,8 +258,35 @@ class Game():
 				assert (decision.name == "WAIT"	or decision.name == "FORFEIT" or decision.name == "GAMEQUIT")
 				
 		#Something went wrong and now we don't have a decision.		
-		assert False		
-			
+		assert False
+		
+	#---------------------------------------------------------------------------
+	#	getActivePlayer()
+	#
+	#	Returns the active player
+	#---------------------------------------------------------------------------				
+	def getActivePlayer(self):
+		numActive = 0
+		activePlayer = None
+		for player in self.players:
+			if player.isActive:
+				activePlayer = player
+				numActive += 1
+		assert numActive == 1
+		return activePlayer
+		
+	#---------------------------------------------------------------------------
+	#	getCallAmount()
+	#
+	#	Returns the amount in the pot that has not been called by the player
+	#---------------------------------------------------------------------------		
+	def getCallAmount(self, player):
+		maxPot = 0
+		for p in self.players:
+			if p.pot > maxPot:
+				maxPot = p.pot
+		
+		return maxPot - player.pot
 			
 #========================================
 #	TESTS
