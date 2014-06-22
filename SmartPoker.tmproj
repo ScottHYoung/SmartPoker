@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>README.txt</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T06:11:04Z</date>
+			<date>2014-06-22T10:42:05Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -18,7 +18,7 @@
 			<key>filename</key>
 			<string>smartPoker.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T05:50:08Z</date>
+			<date>2014-06-22T02:52:04Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -30,43 +30,43 @@
 			<key>filename</key>
 			<string>state.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T05:59:23Z</date>
+			<date>2014-06-22T02:49:41Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>settings.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T04:42:11Z</date>
+			<date>2014-06-22T02:44:52Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>decision.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T06:11:04Z</date>
+			<date>2014-06-22T02:42:28Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>player.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T05:37:19Z</date>
+			<date>2014-06-22T02:42:37Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>basicInterface.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T05:59:30Z</date>
+			<date>2014-06-22T02:54:36Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>game.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T06:09:11Z</date>
+			<date>2014-06-22T10:42:05Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>interface.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-21T05:35:29Z</date>
+			<date>2014-06-22T02:43:27Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -90,9 +90,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>26</integer>
+				<integer>28</integer>
 				<key>line</key>
-				<integer>21</integer>
+				<integer>12</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -104,14 +104,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>59</integer>
+				<integer>55</integer>
 				<key>line</key>
-				<integer>95</integer>
+				<integer>79</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>103</integer>
+			<integer>59</integer>
 		</dict>
 		<key>card.py</key>
 		<dict>
@@ -160,14 +160,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>29</integer>
+				<integer>63</integer>
 				<key>line</key>
-				<integer>140</integer>
+				<integer>120</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>77</integer>
+			<integer>95</integer>
 		</dict>
 		<key>human.py</key>
 		<dict>
@@ -202,14 +202,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>9</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>108</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>111</integer>
+			<integer>82</integer>
 		</dict>
 		<key>settings.py</key>
 		<dict>
@@ -244,14 +244,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>42</integer>
+				<integer>83</integer>
 				<key>line</key>
-				<integer>171</integer>
+				<integer>162</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>130</integer>
+			<integer>155</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
@@ -272,6 +272,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{263, 234}, {1016, 590}}</string>
+	<string>{{267, 288}, {1016, 590}}</string>
 </dict>
 </plist>

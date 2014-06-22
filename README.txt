@@ -10,7 +10,7 @@ the progress!
 
 To Do:
 
-- Finish incrementActivePlayer()
+- Add function getNextPlayer()
 - Finish newBettingRound()
 - Finish endHand()
 - Create Game test suite	

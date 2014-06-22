@@ -113,12 +113,12 @@ class Game():
 			#Dealer position + 1 = SB, Dealer position + 2 = LB
 			
 			for player in self.players:
-				if player.id == ((self.currentDealer + 1) % self.numInGame):
+				if player.id == ((self.currentDealer + 1) % self.numPlayers):
 					if not player.addToPot(self.smallBlind):
 						player.addToPot(player.bank)
 					smallBlinds += 1
 				
-				if player.id == ((self.currentDealer + 2) % self.numInGame):
+				if player.id == ((self.currentDealer + 2) % self.numPlayers):
 					if not player.addToPot(self.bigBlind):
 						player.addToPot(player.bank)
 					bigBlinds += 1
@@ -218,7 +218,35 @@ class Game():
 	#---------------------------------------------------------------------------		
 	def incrementActivePlayer(self):
 		
-		pass
+		p = self.getPlayerByID(self.currentActive)
+		p.isActive = False
+		
+		while True
+			
+			self.numVisits += 1
+			self.currentActive = (self.currentActive + 1) % self.numPlayers
+			
+			p = self.getPlayerByID(self.currentActive)
+			
+			assert p != None
+			
+			if nextPlayer.isInHand == True:
+				break
+				
+		p.isActive = True
+		
+		# Check if there are unresolved raises that other players must respond to
+		uncheckedBets = False
+		for p2 in self.players:
+			callAmount = self.getCallAmount(p2)
+			if p2.isInHand and callAmount > 0:
+				uncheckedBets = True
+				
+		# If we've been once around and there are no unchecked raises, the betting round is over		
+		if self.numVisits > self.numPlayers and uncheckedBets = False:
+			return True
+		else:
+			return False
 		
 	#---------------------------------------------------------------------------
 	#	newBettingRound()
@@ -228,7 +256,15 @@ class Game():
 	#---------------------------------------------------------------------------		
 	def newBettingRound(self):
 
-		pass			
+		self.numVisits = 0
+		self.bettingRound += 1
+	
+		for player in self.players:
+			if player.id == ((self.currentDealer + 1) % self.numPlayers):
+				if not player.addToPot(self.smallBlind):
+					player.addToPot(player.bank)
+				smallBlinds += 1		
+					
 		
 	#---------------------------------------------------------------------------
 	#	passToPlayers()
@@ -287,6 +323,17 @@ class Game():
 				maxPot = p.pot
 		
 		return maxPot - player.pot
+		
+	#---------------------------------------------------------------------------
+	#	getPlayerByID(id)
+	#
+	#	Returns the player with the specified ID
+	#---------------------------------------------------------------------------
+	def getPlayerByID(self, ID):
+		for p in self.players:
+			if p.ID == ID:
+				return p		
+		return None
 			
 #========================================
 #	TESTS
