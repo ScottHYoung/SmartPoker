@@ -11,8 +11,12 @@ the progress!
 To Do:
 
 - Create Game test suite
-- Add reveal code to endHand
+- Add reveal code to endHand (add new game variable lastRaised, force that person to reveal first)
+- Add code for split pots
+- Add code for ties
+- Add code for winning the game
 - Make hand.winner() work properly
 - Don't allow player to raise when all they can do is call
-- Make "C" key work for both calling and checking since they are mutually exclusive actions	
+- Make "C" key work for both calling and checking since they are mutually exclusive actions
+	
 - Add AI class
