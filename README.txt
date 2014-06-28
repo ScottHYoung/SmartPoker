@@ -10,8 +10,7 @@ the progress!
 
 To Do:
 
-- Add function getNextPlayer()
-- Finish newBettingRound()
-- Finish endHand()
+- Add reveal code to endHand
+- Make hand.winner() work properly
 - Create Game test suite	
 - Add AI class

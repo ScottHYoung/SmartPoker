@@ -11,7 +11,7 @@
 #
 #---------------------------------------------------------------------------
 
-import settings, decision, state, card, interface, player, deck, human
+import settings, decision, state, card, interface, player, deck, human, hand
 
 #---------------------------------------------------------------------------
 #	Game class
@@ -66,8 +66,11 @@ class Game():
 		self.numInGame = self.settings.numPlayers
 		self.numInHand = self.settings.numPlayers
 		self.communityCards = []
+		self.numPlayers = self.settings.numPlayers
 		
-		self.newHand()
+		gameOver = False
+		while not gameOver:
+			gameOver = self.newHand()
 		
 	#---------------------------------------------------------------------------
 	#	newHand()
@@ -76,6 +79,16 @@ class Game():
 	#	cards to all players still in the game, subtracting the blinds
 	#---------------------------------------------------------------------------
 	def newHand(self):
+		
+		#Check that the game hasn't ended
+		if self.numInGame <= 1:
+			return True
+		
+		#Put everyone still playing back in the hand
+		for p in self.players:
+			if p.isInGame:
+				p.isInHand = True
+		self.numInHand = self.numInGame
 		
 		#Make a new deck and shuffle it
 		self.deck = deck.Deck()
@@ -88,9 +101,6 @@ class Game():
 			#Do some quick checks to make sure the endHand procedure didn't make any errors
 			assert player.pot == 0
 			assert player.pocket[0] != None and player.pocket[1] != None
-			
-		#Subtract the blinds into the pot
-		assert self.numInGame >= 2
 		
 		bigBlinds = 0
 		smallBlinds = 0
@@ -139,10 +149,14 @@ class Game():
 		
 		#Betting begins at round 0
 		self.bettingRound = 0
-		self.numVisits = 0
+		self.numVisits = 1
 			
 		#Start the game
-		self.nextAction()
+		handOver = False
+		while not handOver:
+			handOver = self.nextAction()
+			
+		return False
 		
 	#---------------------------------------------------------------------------
 	#	nextAction()
@@ -163,12 +177,11 @@ class Game():
 			
 		elif theDecision.name == "FORFEIT":
 			activePlayer.bank = 0
-			activePlayer.isInHand = False
-			activePlayer.isInGame = False
+			self.removeFromGame(activePlayer)
 			checkIfHandOver = True
 			
 		elif theDecision.name == "FOLD":
-			activePlayer.isInHand = False
+			self.removeFromHand(activePlayer)
 			checkIfHandOver = True
 		
 		elif theDecision.name == "CHECK":
@@ -199,15 +212,21 @@ class Game():
 			
 			if numInHand <= 1:
 				
-				#self.endHand()
+				self.endHand()
+				
+				
+				return True
 		
 		
 		
 		newBettingRound = self.incrementActivePlayer()
 		
+		handOver = False
 		if newBettingRound:
 			
-			self.newBettingRound()	
+			handOver = self.newBettingRound()	
+			
+		return handOver
 			
 	#---------------------------------------------------------------------------
 	#	incrementActivePlayer()
@@ -221,7 +240,7 @@ class Game():
 		p = self.getPlayerByID(self.currentActive)
 		p.isActive = False
 		
-		while True
+		while True:
 			
 			self.numVisits += 1
 			self.currentActive = (self.currentActive + 1) % self.numPlayers
@@ -230,7 +249,7 @@ class Game():
 			
 			assert p != None
 			
-			if nextPlayer.isInHand == True:
+			if p.isInHand == True:
 				break
 				
 		p.isActive = True
@@ -243,7 +262,7 @@ class Game():
 				uncheckedBets = True
 				
 		# If we've been once around and there are no unchecked raises, the betting round is over		
-		if self.numVisits > self.numPlayers and uncheckedBets = False:
+		if self.numVisits > self.numPlayers and uncheckedBets == False:
 			return True
 		else:
 			return False
@@ -256,15 +275,135 @@ class Game():
 	#---------------------------------------------------------------------------		
 	def newBettingRound(self):
 
-		self.numVisits = 0
+		self.numVisits = 1
 		self.bettingRound += 1
+		
+		if self.bettingRound <= 3:
+		
+			p = self.getPlayerByID(self.currentActive)
+			p.isActive = False
+			
+			self.currentActive = (self.currentDealer + 1) % self.numPlayers
 	
-		for player in self.players:
-			if player.id == ((self.currentDealer + 1) % self.numPlayers):
-				if not player.addToPot(self.smallBlind):
-					player.addToPot(player.bank)
-				smallBlinds += 1		
+			while True:
+		
+				self.currentActive = (self.currentActive + 1) % self.numPlayers
+			
+				p = self.getPlayerByID(self.currentActive)
+			
+				assert p != None
+			
+				if p.isInHand == True:
+					break
+				
+			p.isActive = True
+		
+			#Run specific betting round
+		
+			if self.bettingRound == 1:
+			
+				#The Flop
+				self.communityCards.append(self.deck.draw())
+				self.communityCards.append(self.deck.draw())
+				self.communityCards.append(self.deck.draw())
+			
+			elif self.bettingRound == 2:
+			
+				#The Turn
+				self.communityCards.append(self.deck.draw())
+			
+			elif self.bettingRound == 3:
+			
+				#The River
+				self.communityCards.append(self.deck.draw())
+		
+		# We've reached the end of all betting
+		else:
+			self.endHand()
+			return True
+			
+		return False
+			
+	#---------------------------------------------------------------------------
+	#	endHand()
+	#
+	#	Check if there is only one player left inHand, in which case, give him
+	#	the pot and call a new hand. If there is more than one, reveal the cards
+	#	of those remaining and calculate the winner
+	#---------------------------------------------------------------------------
+	def endHand(self):
+		
+		theWinner = None
+		
+		thePot = 0
+		for p in self.players:
+			thePot += p.pot
+			p.pot = 0
+			
+		if self.numInHand == 1:
+			for p in self.players:
+				if p.isInHand:
+					theWinner = p
 					
+		elif self.numInHand > 1:
+			
+			#NEED TO ADD REVEAL CODE HERE
+			
+			assert len(self.communityCards) == 5
+			
+			hands = []
+			for p in self.players:
+				if p.isInHand:
+					hands.append(hand.Hand(p.pocket + self.communityCards, ID = p.id))
+					
+			winningID = hand.winner(hands)
+					
+			theWinner = self.getPlayerByID(winningID)		
+							
+				
+			
+		else:
+			assert False
+			
+		theWinner.bank += thePot
+		
+		#Increment the dealer
+		
+		p = self.getPlayerByID(self.currentDealer)
+		p.isDealer = False
+		while True:
+	
+			self.currentDealer = (self.currentDealer + 1) % self.numPlayers
+		
+			p = self.getPlayerByID(self.currentDealer)
+		
+			assert p != None
+		
+			if p.isInGame == True:
+				break
+			
+		p.isDealer = True		
+			
+		
+	#---------------------------------------------------------------------------
+	#	removeFromHand()
+	#
+	#	Takes the player out of the hand
+	#---------------------------------------------------------------------------	
+	def removeFromHand(self, thePlayer):
+		thePlayer.isInHand = False
+		self.numInHand -= 1	
+		
+	#---------------------------------------------------------------------------
+	#	removeFromGame()
+	#
+	#	Takes the player out of the hand and the game
+	#---------------------------------------------------------------------------	
+	def removeFromGame(self, thePlayer):
+		thePlayer.isInHand = False
+		self.numInHand -= 1	
+		thePlayer.isInGame = False
+		self.numInGame -= 1			
 		
 	#---------------------------------------------------------------------------
 	#	passToPlayers()
@@ -331,7 +470,7 @@ class Game():
 	#---------------------------------------------------------------------------
 	def getPlayerByID(self, ID):
 		for p in self.players:
-			if p.ID == ID:
+			if p.id == ID:
 				return p		
 		return None
 			

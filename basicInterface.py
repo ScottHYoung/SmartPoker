@@ -56,7 +56,7 @@ class BasicInterface(interface.Interface):
 					#---------------------------------------------------
 		
 		#First clear the screen - TURNED OFF
-		#os.system("clear")
+		os.system("clear")
 		
 		#Now display the game state
 		self.drawState(theState)
@@ -132,7 +132,7 @@ class BasicInterface(interface.Interface):
 		
 		communityStr = "Community cards: "
 		for commCard in theState.communityCards:
-			communityStr += self.cardStr(commCard) + " "
+			communityStr += self.cardString(commCard) + " "
 		print communityStr
 		
 		for p in theState.playersInfo:
