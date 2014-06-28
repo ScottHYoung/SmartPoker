@@ -65,6 +65,9 @@ class Player():
 	#---------------------------------------------------------------------------		
 	def addToPot(self, amount):
 	
+		#Basic sanity test to make sure we're not trying to take money from forfeited/folded players
+		assert self.isInGame and self.isInHand
+		
 		if amount > self.bank:
 			return False
 		else:

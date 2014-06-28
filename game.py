@@ -102,47 +102,26 @@ class Game():
 			assert player.pot == 0
 			assert player.pocket[0] != None and player.pocket[1] != None
 		
-		bigBlinds = 0
-		smallBlinds = 0
+		bb = None
+		sb = None
 		
-		if self.numInGame == 2:
-			#Dealer is small blind, next player is big blind
 			
-			for player in self.players:
-				if player.isDealer:
-					if not player.addToPot(self.smallBlind):
-						player.addToPot(player.bank)
-					smallBlinds += 1
-				#Big blind is the other live player
-				elif player.isInGame:
-					if not player.addToPot(self.bigBlind):
-						player.addToPot(player.bank)
-					bigBlinds += 1
-						
-		else:
-			#Dealer position + 1 = SB, Dealer position + 2 = LB
+		sb = self.getPlayerInHand(((self.currentDealer + 1) % self.numPlayers))
+		if not sb.addToPot(self.smallBlind):
+			sb.addToPot(sb.bank)
 			
-			for player in self.players:
-				if player.id == ((self.currentDealer + 1) % self.numPlayers):
-					if not player.addToPot(self.smallBlind):
-						player.addToPot(player.bank)
-					smallBlinds += 1
-				
-				if player.id == ((self.currentDealer + 2) % self.numPlayers):
-					if not player.addToPot(self.bigBlind):
-						player.addToPot(player.bank)
-					bigBlinds += 1
+		bb = self.getPlayerInHand(((sb.id + 1) % self.numPlayers))
+		if not bb.addToPot(self.bigBlind):
+			bb.addToPot(bb.bank)				
 		
-		#Make sure we put in the correct amount			
-		assert bigBlinds == 1 and smallBlinds == 1
 		
-		#Set the active player	
+		#Reset active player statuses and set a new active player
 		for player in self.players:
-			if player.id == ((self.currentDealer + 3) % self.numInGame):
-				player.isActive = True
-				self.currentActive = player.id
-			else:
-				player.isActive = False				
+			player.isActive = False	
+			
+		active = self.getPlayerInHand(((bb.id + 1) % self.numPlayers))
+		active.isActive = True
+		self.currentActive = active.id		
 			
 		#Reset the community cards
 		self.communityCards = []	
@@ -283,20 +262,9 @@ class Game():
 			p = self.getPlayerByID(self.currentActive)
 			p.isActive = False
 			
-			self.currentActive = (self.currentDealer + 1) % self.numPlayers
-	
-			while True:
-		
-				self.currentActive = (self.currentActive + 1) % self.numPlayers
-			
-				p = self.getPlayerByID(self.currentActive)
-			
-				assert p != None
-			
-				if p.isInHand == True:
-					break
-				
+			p = self.getPlayerInHand((self.currentActive + 1) % self.numPlayers)
 			p.isActive = True
+			self.currentActive = p.id
 		
 			#Run specific betting round
 		
@@ -366,6 +334,11 @@ class Game():
 			assert False
 			
 		theWinner.bank += thePot
+		
+		#Remove bankrupt players from the game
+		for p in self.players:
+			if p.bank <= 0:
+				self.removeFromGame(p)
 		
 		#Increment the dealer
 		
@@ -462,6 +435,21 @@ class Game():
 				maxPot = p.pot
 		
 		return maxPot - player.pot
+		
+	#---------------------------------------------------------------------------
+	#	getPlayerInHand()
+	#
+	#	Given an id, returns that player or the next in sequence until the player
+	#	is inHand
+	#---------------------------------------------------------------------------		
+	def getPlayerInHand(self, ID):
+		thePlayer = self.getPlayerByID(ID)
+		
+		while not (thePlayer.isInHand and thePlayer.isInGame):
+			ID = (ID + 1) % self.numPlayers
+			thePlayer = self.getPlayerByID(ID)
+			
+		return thePlayer	
 		
 	#---------------------------------------------------------------------------
 	#	getPlayerByID(id)

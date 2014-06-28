@@ -10,7 +10,9 @@ the progress!
 
 To Do:
 
+- Create Game test suite
 - Add reveal code to endHand
 - Make hand.winner() work properly
-- Create Game test suite	
+- Don't allow player to raise when all they can do is call
+- Make "C" key work for both calling and checking since they are mutually exclusive actions	
 - Add AI class
