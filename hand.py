@@ -87,55 +87,231 @@ class Hand():
 	#	straightFlush()
 	#--------------------------------------------------------------------------	
 	def straightFlush(self):
-		return []
+		suits = self.groupBySuit()
+		hasStraightFlush = False
+		bestStraight = 0
+		for suit in suits.keys():
+			
+			highestStraight = 0
+			#We have to have at least 5 cards to have a straight
+			if len(suits[suit]) >= 5:
+				ranks = self.groupByRank(suits[suit])
+				numInARow = 0
+				for i in range(14, 0, -1):
+					if len(ranks[i]) > 0:
+						numInARow += 1
+					else:
+						numInARow = 0
+						
+					if numInARow >= 5:
+						highestStraight = i + 4
+						hasStraightFlush = True
+						
+						#No more need to keep going, we have the highest straight flush for this suit
+						break
+						
+			if highestStraight > bestStraight:
+				bestStraight = highestStraight
+				
+		if hasStraightFlush:
+			return [bestStraight]
+		else:
+			return None
+					
 		
 	#--------------------------------------------------------------------------
 	#	fourOfAKind()
 	#--------------------------------------------------------------------------	
 	def fourOfAKind(self):
-		return []
+		return self.nOfAKind(4)	
 				
 	#--------------------------------------------------------------------------
 	#	fullHouse()
 	#--------------------------------------------------------------------------	
 	def fullHouse(self):
-		return []
+		ranks = self.groupByRank()
+		for r in range(14, 0, -1):
+			
+			if len(ranks[r]) >= 3:
+				#Delete the three of a kind and look for a pair
+				ranks[r] = ranks[r][3:]
+				
+				for p in range(14, 0, -1):
+					if len(ranks[p]) >= 2:
+						return [r, p]
+		
+		return None
 		
 	#--------------------------------------------------------------------------
 	#	flush()
 	#--------------------------------------------------------------------------	
 	def flush(self):
-		return []
+		hasFlush = False
+		bestOrder = []
+		suits = self.groupBySuit()
+		for s in suits.keys():
+			if len(suits[s]) >= 5:
+				hasFlush = True
+				
+				#This suit has a flush, now we need to figure out its best flush and compare it
+				#to other possible flushes in the other suits
+				ranks = self.groupByRank(suits[s])
+				cardOrder = []
+				for r in range(14, 0, -1):
+					for i in range(len(ranks[r])):
+						cardOrder.append(r)
+						
+				if len(bestOrder) == 0:
+					bestOrder = cardOrder[:5]
+				elif ((cardOrder[0], cardOrder[1], cardOrder[2], cardOrder[3], cardOrder[4]) >
+					  (bestOrder[0], bestOrder[1], bestOrder[2], bestOrder[3], bestOrder[4])):
+					bestOrder = cardOrder[:5]
+					
+		if hasFlush:
+			return bestOrder
+		else:
+			return None
 
 	#--------------------------------------------------------------------------
 	#	straight()
 	#--------------------------------------------------------------------------	
 	def straight(self):
-		return []	
+		ranks = self.groupByRank()
+		numInARow = 0
+		for r in range(14, 0, -1):
+			if len(ranks[r]) > 0:
+				numInARow += 1
+			else:
+				numInARow = 0
+				
+			if numInARow >= 5:
+				return [r + 4]
+				
+		return None
 		
 	#--------------------------------------------------------------------------
 	#	threeOfAKind()
 	#--------------------------------------------------------------------------	
 	def threeOfAKind(self):
-		return []
+		return self.nOfAKind(3)
 	
 	#--------------------------------------------------------------------------
 	#	twoPairs()
 	#--------------------------------------------------------------------------	
 	def twoPairs(self):
-		return []	
+		ranks = self.groupByRank()
+		for r in range(14, 0, -1):
+			
+			if len(ranks[r]) >= 2:
+				#Delete the pair and look for another
+				ranks[r] = ranks[r][2:]
+				
+				for p in range(14, 0, -1):
+					if len(ranks[p]) >= 2:
+						
+						#Delete the second pair and look for a kicker
+						ranks[p] = ranks[p][2:]
+						
+						for k in range(14, 0, -1):
+							if len(ranks[k]) >= 1:
+								return [r, p, k]
+		
+		return None	
 		
 	#--------------------------------------------------------------------------
 	#	pair()
 	#--------------------------------------------------------------------------	
 	def pair(self):
-		return []	
+		return self.nOfAKind(2)	
 		
 	#--------------------------------------------------------------------------
 	#	highCard()
 	#--------------------------------------------------------------------------	
-	def straightFlush(self):
-		return []							
+	def highCard(self):
+		ranks = self.groupByRank()
+		best = []
+		for r in range(14, 0, -1):
+			for n in range(len(ranks[r])):
+				best.append(r)
+				
+		return best
+					
+		
+	#--------------------------------------------------------------------------
+	#	nOfAKind()
+	#
+	#	Generalizes search for 4-of-a-kind, 3-of-a-kind, 2-of-a-kinds, etc.
+	#--------------------------------------------------------------------------
+	def nOfAKind(self, n):
+		ranks = self.groupByRank()
+		for r in range(14, 0, -1):
+		
+			if len(ranks[r]) >= n:
+				#Delete the n of a kind and start looking for the kicker
+				ranks[r] = ranks[r][n:]
+				returnVal = [r]
+				for numKickers in range(5-n):
+					for k in range(14, 0, -1):
+						if len(ranks[k]) >= 1:
+							returnVal.append(k)
+							ranks[k] = ranks[k][1:]
+							break
+				
+				return returnVal
+				
+		return None
+	
+			
+		
+	#--------------------------------------------------------------------------
+	#	groupBySuit()
+	#
+	#	Takes all of the cards and splits them into four groups, based on suit
+	#	Optionally can be given a different set of cards to group (say a subset)
+	#--------------------------------------------------------------------------
+	def groupBySuit(self, theCards = None):
+		
+		if theCards == None:
+			theCards = self.cards
+			
+		groups = {card.Card.DIAMONDS:[],
+				  card.Card.HEARTS:[],
+				  card.Card.CLUBS:[],
+				  card.Card.SPADES:[]}
+				
+		for c in theCards:
+			groups[c.suit].append(c)
+			
+		return groups
+		
+	#--------------------------------------------------------------------------
+	#	groupByRank()
+	#
+	#	Takes all of the cards and splits them into fourteen groups, based on rank
+	#	Optionally can be given a different set of cards to group (say a subset)
+	#	Note: Aces will be double counted as being both 1 and 14, so this operation
+	#	DOES NOT preserve number of cards.
+	#--------------------------------------------------------------------------
+	def groupByRank(self, theCards = None):
+
+		if theCards == None:
+			theCards = self.cards
+
+		groups = {1:[], 2:[], 3:[], 4:[], 5:[],
+				  6:[], 7:[], 8:[], 9:[], 10:[],
+				  11:[], 12:[], 13:[], 14:[]}
+
+		for c in theCards:
+			rank = c.getRank()
+			groups[rank].append(c)
+			
+			#Ace is both a high and a low card
+			if rank == 14:
+				groups[1].append(c)
+
+		return groups	
+		
+							
 #--------------------------------------------------------------------------
 #	Class Functions 
 #--------------------------------------------------------------------------	
@@ -151,4 +327,207 @@ def winner(hands):
 	winningID = hands[0].id#-1
 	
 	return winningID
+	
+	
+#========================================
+#	TESTS
+#========================================	
+if __name__ == "__main__":
+	
+	print "Testing constructor."
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "3"), card.Card("H", "4"), card.Card("H", "5"),card.Card("H", "6"),
+			 card.Card("C", "A"), card.Card("S", "A")])
+			
+	print "Test complete."
+	
+	print "Testing groupBy functions."
+	
+	g = h.groupBySuit()
+	assert len(g[card.Card.HEARTS]) == 5
+	assert len(g[card.Card.DIAMONDS]) == 0
+	
+	g = h.groupByRank()
+	assert len(g[14]) == 3
+	assert len(g[1]) == 3
+	assert len(g[3]) == 1
+	assert len(g[12]) == 0
+	
+	print "Test complete."
+	
+	print "Testing straight flushes"
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "A")])
+	
+	result = h.straightFlush()
+	assert result != None and result[0] == 5
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("H", "6"), card.Card("H", "7"), card.Card("H", "8"), card.Card("H", "9"),card.Card("H", "J")])
+	
+	result = h.straightFlush()
+	assert result != None and result[0] == 9	
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("D", "6"), card.Card("D", "7"), card.Card("D", "8"), card.Card("D", "9"),card.Card("D", "10")])
+	
+	result = h.straightFlush()
+	assert result != None and result[0] == 10	
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("C", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("D", "6"), card.Card("D", "7"), card.Card("C", "8"), card.Card("D", "9"),card.Card("D", "10")])
+	
+	result = h.straightFlush()
+	assert result == None	
+	
+	print "Test complete."
+	
+	print "Testing n's of a kind."
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "A")])	
+	
+	result = h.fourOfAKind()
+	assert result != None 
+	assert result[0] == 14 
+	assert result[1] == 5	
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "3"),card.Card("H", "3"),
+			 card.Card("C", "A"), card.Card("S", "A")], card.Card("H", "3"))	
+	
+	result = h.fourOfAKind()
+	assert result != None and result[0] == 14 and result[1] == 3
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "3"),
+			 card.Card("C", "A"), card.Card("S", "4")], card.Card("H", "3"))	
+	
+	result = h.fourOfAKind()
+	assert result == None
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4")], card.Card("H", "3"))	
+	
+	result = h.threeOfAKind()
+	assert result != None and result[0] == 14 and result[1] == 5 and result[2] == 5	
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4")], card.Card("H", "3"))	
+	
+	result = h.pair()
+	assert result != None and result[0] == 14 and result[1] == 14 and result[2] == 5 and result[3] == 5	
+	
+	print "Test complete."	
+	
+	print "Testing full house."	
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("S", "3"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "K")])	
+	
+	result = h.fullHouse()
+	assert result != None and result[0] == 14 and result[1] == 3
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("S", "3"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "A"), card.Card("S", "5"), card.Card("S", "6")])	
+	
+	result = h.fullHouse()
+	assert result != None and result[0] == 14 and result[1] == 5			
 		
+	h = Hand([card.Card("H", "K"), card.Card("D", "A"), card.Card("H", "3"), card.Card("S", "3"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "J"), card.Card("S", "5"), card.Card("S", "6")])	
+	
+	result = h.fullHouse()
+	assert result == None
+	
+	print "Test complete."	
+		
+	print "Testing flush."
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("C", "K"), card.Card("C", "2"), card.Card("C", "3"), card.Card("C", "4"),card.Card("C", "5"),
+			 card.Card("H", "6")])	
+			
+	result = h.flush()
+	assert result != None
+	assert result[0] == 14 and result[1] == 6 and result[2] == 5 and result[3] == 4 and result[4] == 3
+	
+	h = Hand([card.Card("H", "A"), card.Card("H", "2"), card.Card("H", "3"), card.Card("H", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("C", "2"), card.Card("C", "3"), card.Card("C", "4"),card.Card("C", "5"),
+			 card.Card("H", "4")])	
+			
+	result = h.flush()
+	assert result != None
+	assert result[0] == 14 and result[1] == 5 and result[2] == 4 and result[3] == 4 and result[4] == 3	
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "2"), card.Card("H", "3"), card.Card("D", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "2"), card.Card("C", "3"), card.Card("S", "4"),card.Card("C", "5"),
+			 card.Card("H", "4")])	
+			
+	result = h.flush()
+	assert result == None
+	
+	print "Test complete."
+		
+	print "Testing straights."
+	
+	h = Hand([card.Card("H", "A"), card.Card("C", "2"), card.Card("H", "3"), card.Card("S", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "A")])
+	
+	result = h.straight()
+	assert result != None and result[0] == 5	
+	
+	h = Hand([card.Card("H", "A"), card.Card("C", "2"), card.Card("H", "7"), card.Card("S", "4"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "A")])
+	
+	result = h.straight()
+	assert result == None		
+	
+	h = Hand([card.Card("H", "A"), card.Card("C", "2"), card.Card("H", "3"), card.Card("S", "4"),card.Card("H", "5"),
+			 card.Card("C", "K"), card.Card("S", "Q"), card.Card("S", "J"), card.Card("D", "10")])
+	
+	result = h.straight()
+	assert result != None and result[0] == 14
+	
+	print "Test complete"
+	
+	print "Testing two pairs."
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4"), card.Card("H", "3")])
+	
+	result = h.twoPairs()
+	assert result != None and result[0] == 14 and result[1] == 5 and result[2] == 14
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "7"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4"), card.Card("H", "3")])
+	
+	result = h.twoPairs()
+	assert result != None and result[0] == 14 and result[1] == 5 and result[2] == 7	
+	
+	h = Hand([card.Card("H", "K"), card.Card("D", "7"), card.Card("H", "3"), card.Card("H", "6"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4"), card.Card("H", "3")])
+	
+	result = h.twoPairs()
+	assert result == None
+	
+	print "Test complete."	
+	
+	print "Testing high card."
+	
+	h = Hand([card.Card("H", "A"), card.Card("D", "A"), card.Card("H", "3"), card.Card("H", "5"),card.Card("H", "5"),
+			 card.Card("C", "A"), card.Card("S", "4"), card.Card("H", "3")])
+	
+	result = h.highCard()
+	assert result != None and result[0] == 14 and result[1] == 14 and result[2] == 14 and result[3] == 5 and result[4] == 5
+	
+	h = Hand([card.Card("H", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "4"), card.Card("H", "8")])
+	
+	result = h.highCard()
+	assert result != None 
+	assert result[0] == 13 
+	assert result[1] == 12 
+	assert result[2] == 8 
+	assert result[3] == 6 
+	assert result[4] == 5
+	
+	print "Test complete."	

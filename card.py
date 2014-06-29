@@ -17,6 +17,11 @@
 #---------------------------------------------------------------------------
 class Card:
 	
+	DIAMONDS = "diamonds"
+	HEARTS = "hearts"
+	CLUBS = "clubs"
+	SPADES = "spades"
+	
 	#---------------------------------------------------------------------------
 	#	Constructor
 	#
@@ -61,13 +66,13 @@ class Card:
 		newSuit = newSuit.lower()
 
 		if newSuit == "hearts" or newSuit == "h":
-			self.suit = "hearts"
+			self.suit = self.HEARTS
 		elif newSuit == "diamonds" or newSuit == "d":
-			self.suit = "diamonds"
+			self.suit = self.DIAMONDS
 		elif newSuit == "clubs" or newSuit == "c":
-			self.suit = "clubs"
+			self.suit = self.CLUBS
 		elif newSuit == "spades" or newSuit == "s":
-			self.suit = "spades"
+			self.suit = self.SPADES
 		elif newSuit == "unknown" or newSuit == "?":
 			self.suit = "unknown"
 		else:
@@ -83,7 +88,7 @@ class Card:
 		if self.suit != "undefined" and self.number != "undefined":
 
 			#Assert that it is not some other string (should never happen)
-			assert (self.suit == "hearts" or self.suit == "diamonds" or self.suit == "clubs" or self.suit == "spades" or self.suit == "unknown")
+			assert (self.suit == self.HEARTS or self.suit == self.DIAMONDS or self.suit == self.CLUBS or self.suit == self.SPADES or self.suit == "unknown")
 			assert (self.number == "2" or self.number == "3" or self.number == "4" or self.number == "5" or self.number == "6" or
 					self.number == "7" or self.number == "8" or self.number == "9" or self.number == "10" or self.number == "unknown" or
 					self.number == "J" or self.number == "Q" or self.number == "K" or self.number == "A")
@@ -114,12 +119,12 @@ class Card:
 	#---------------------------------------------------------------------------	
 	def isColorMatch(self, card):
 
-		if self.suit == "hearts" or self.suit == "diamonds":
+		if self.suit == self.HEARTS or self.suit == self.DIAMONDS:
 			color1 = "R"
 		else:
 			color1 = "B"
 		
-		if card.suit == "hearts" or card.suit == "diamonds":
+		if card.suit == self.HEARTS or card.suit == self.DIAMONDS:
 			color2 = "R"
 		else:
 			color2 = "B"
@@ -149,7 +154,44 @@ class Card:
 
 		return (card.isValid() and self.isValid()) and self.suit == card.suit
 		
+	#---------------------------------------------------------------------------
+	#	getRank()
+	#
+	#	Returns the rank of a card (J = 11, Q = 12, K = 13, A = 14)
+	#	unknown and invalid cards are -1s
+	#---------------------------------------------------------------------------
+	def getRank(self):
 		
+		if self.number == "1":
+			return 1
+		elif self.number == "2":
+			return 2	
+		elif self.number == "3":
+			return 3
+		elif self.number == "4":
+			return 4
+		elif self.number == "5":
+			return 5					
+		elif self.number == "6":
+			return 6	
+		elif self.number == "7":
+			return 7
+		elif self.number == "8":
+			return 8	
+		elif self.number == "9":
+			return 9
+		elif self.number == "10":
+			return 10	
+		elif self.number == "J":
+			return 11
+		elif self.number == "Q":
+			return 12	
+		elif self.number == "K":
+			return 13	
+		elif self.number == "A":
+			return 14
+		else:
+			return -1					
 	#---------------------------------------------------------------------------
 	#	isKnown()
 	#
@@ -173,13 +215,13 @@ if __name__ == '__main__':
 	#UNIT TESTS
 	print "Testing constructors"
 	
-	newCard = Card("hearts", "K")
+	newCard = Card(Card.HEARTS, "K")
 	assert newCard.isValid()
-	newCard = Card("diamonds", "king")
+	newCard = Card(Card.DIAMONDS, "king")
 	assert newCard.isValid()
-	newCard = Card("spades", "King")
+	newCard = Card(Card.SPADES, "King")
 	assert newCard.isValid()
-	newCard = Card("clubs", "KING")
+	newCard = Card(Card.CLUBS, "KING")
 	assert newCard.isValid()
 	
 	newCard = Card("h", "Q")
@@ -241,7 +283,7 @@ if __name__ == '__main__':
 	print "Testing isMatch()"
 	
 	card1 = Card("H", "A")
-	card2 = Card("hearts", "1")
+	card2 = Card(Card.HEARTS, "1")
 	assert card1.isMatch(card2)
 	
 	card1 = Card("!", "A")
@@ -252,7 +294,7 @@ if __name__ == '__main__':
 	card2 = Card("S", "1")
 	assert not card1.isMatch(card2)	
 	
-	card1 = Card("spades", "J")
+	card1 = Card(Card.SPADES, "J")
 	card2 = Card("S", "1")
 	assert not card1.isMatch(card2)	
 	
@@ -288,15 +330,15 @@ if __name__ == '__main__':
 	
 	print "Testing isSuited()"
 	
-	card1 = Card("hearts", "A")
+	card1 = Card(Card.HEARTS, "A")
 	card2 = Card("H", "K")
 	assert card1.isSuited(card2)
 	
-	card1 = Card("diamonds", "A")
+	card1 = Card(Card.DIAMONDS, "A")
 	card2 = Card("d", "K")
 	assert card1.isSuited(card2)
 	
-	card1 = Card("hearts", "A")
+	card1 = Card(Card.HEARTS, "A")
 	card2 = Card("D", "K")
 	assert not card1.isSuited(card2)
 	

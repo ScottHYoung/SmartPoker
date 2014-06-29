@@ -11,14 +11,5 @@ the progress!
 To Do:
 
 - Hand class:
-	Evaluation Functions:
-		- straightFlush
-		- fourOfAKind
-		- fullHouse
-		- flush
-		- straight
-		- threeOfAKind
-		- twoPairs
-		- pair
-		- highCard
+	-Finish winner() function
 - Add AI class

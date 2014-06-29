@@ -201,13 +201,13 @@ class BasicInterface(interface.Interface):
 		
 		cardStr = ""
 		
-		if theCard.suit == "hearts":
+		if theCard.suit == card.Card.HEARTS:
 			cardStr += "H"
-		elif theCard.suit == "diamonds":
+		elif theCard.suit == card.Card.DIAMONDS:
 			cardStr += "D"
-		elif theCard.suit == "clubs":
+		elif theCard.suit == card.Card.CLUBS:
 			cardStr += "C"
-		elif theCard.suit == "spades":
+		elif theCard.suit == card.Card.SPADES:
 			cardStr += "S"
 		elif theCard.suit == "unknown":
 			cardStr += "?"
