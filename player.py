@@ -74,6 +74,14 @@ class Player():
 			self.bank -= amount
 			self.pot += amount
 			return True
+	
+	#---------------------------------------------------------------------------
+	#	revealCards()
+	#
+	#	Reveals the pocket cards, so passToPlayers passes the real cards instead of (?,?)
+	#---------------------------------------------------------------------------
+	def revealCards(self):
+		self.hasRevealed = True
 		
 #---------------------------------------------------------------------------
 #	PlayerInfo class

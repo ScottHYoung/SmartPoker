@@ -12,6 +12,7 @@
 #---------------------------------------------------------------------------
 
 import settings, decision, state, card, interface, player, deck, human, hand
+import testInterface
 
 #---------------------------------------------------------------------------
 #	Game class
@@ -24,7 +25,7 @@ class Game():
 	#	Passed a settings object the game will initialize the game settings to
 	#	begin playing poker.
 	#---------------------------------------------------------------------------	
-	def __init__(self, theSettings, theInterfaceConstructor):
+	def __init__(self, theSettings, theInterfaceConstructor=None, theInterfaces=[]):
 		
 		self.settings = theSettings
 		self.players = []
@@ -44,13 +45,18 @@ class Game():
 				nameGen = "Player"+str(i)
 			
 			#Change these to human/AI later
+			if theInterfaceConstructor != None:
+				theInterface = theInterfaceConstructor(i)	
+			elif len(theInterfaces) > i:
+				theInterface = theInterfaces[i]
+			else:
+				assert False			
 			if i < (self.settings.numPlayers - self.settings.numAIs):
-					
-				newPlayer = human.Human(theInterfaceConstructor(i), i, nameGen, self.settings.numChips)
+				newPlayer = human.Human(theInterface, i, nameGen, self.settings.numChips)
 			else:
 				
 				#Currently a Human, replace this with the AI class later
-				newPlayer = human.Human(theInterfaceConstructor(i), i, nameGen, self.settings.numChips)
+				newPlayer = human.Human(theInterface, i, nameGen, self.settings.numChips)
 				
 			if i == 0:
 				newPlayer.isActive = True
@@ -68,9 +74,20 @@ class Game():
 		self.communityCards = []
 		self.numPlayers = self.settings.numPlayers
 		
+		#Some variables to handle the revealing sequence in a showdown
+		self.lastRaised = 0
+		self.canDenyRevealed = False	#First player up in a showdown must reveal (can't fold)
+		
 		gameOver = False
 		while not gameOver:
 			gameOver = self.newHand()
+			
+		winnerText = ""
+		for p in self.players:
+			if p.bank > 0:
+				winnerText = p.name + " has won the game! Thanks for playing."
+					
+		self.passToPlayers({state.State.CONTINUE_ONLY:True, state.State.CONTINUE_TEXT:winnerText})
 		
 	#---------------------------------------------------------------------------
 	#	newHand()
@@ -95,12 +112,13 @@ class Game():
 		self.deck.shuffle()
 		
 		#Deal the pocket cards
-		for player in self.players:
-			player.pocket = [self.deck.draw(), self.deck.draw()]
+		for p in self.players:
+			p.pocket = [self.deck.draw(), self.deck.draw()]
+			p.hasRevealed = False
 			
 			#Do some quick checks to make sure the endHand procedure didn't make any errors
-			assert player.pot == 0
-			assert player.pocket[0] != None and player.pocket[1] != None
+			assert p.pot == 0
+			assert p.pocket[0] != None and p.pocket[1] != None
 		
 		bb = None
 		sb = None
@@ -112,12 +130,16 @@ class Game():
 			
 		bb = self.getPlayerInHand(((sb.id + 1) % self.numPlayers))
 		if not bb.addToPot(self.bigBlind):
-			bb.addToPot(bb.bank)				
+			bb.addToPot(bb.bank)
+			
+		#in an extreme case, where everyone checks BB and goes to showdown, BB reveals first
+		#in our rules of the game, for simplicity
+		self.lastRaised = bb.id				
 		
 		
 		#Reset active player statuses and set a new active player
-		for player in self.players:
-			player.isActive = False	
+		for p in self.players:
+			p.isActive = False	
 			
 		active = self.getPlayerInHand(((bb.id + 1) % self.numPlayers))
 		active.isActive = True
@@ -145,39 +167,57 @@ class Game():
 	#---------------------------------------------------------------------------
 	def nextAction(self):
 		
-		theDecision = self.passToPlayers()
+		#Check to make sure we're not revealing in a showdown
+		if self.bettingRound == 4:
+			if self.canDenyReveal:
+				miscInfo = {state.State.REVEAL_OR_FOLD:True}
+			else:
+				miscInfo = {state.State.MUST_REVEAL:True}
+				
+		else:
+			miscInfo = {}
+		
+		theDecision = self.passToPlayers(miscInfo)
 		
 		activePlayer = self.getActivePlayer()
 		
 		checkIfHandOver = False
 		
-		if theDecision.name == "GAMEQUIT":
+		if theDecision.name == decision.Decision.GAMEQUIT:
 			raise SystemExit
 			
-		elif theDecision.name == "FORFEIT":
+		elif theDecision.name == decision.Decision.FORFEIT:
 			activePlayer.bank = 0
 			self.removeFromGame(activePlayer)
 			checkIfHandOver = True
 			
-		elif theDecision.name == "FOLD":
+		elif theDecision.name == decision.Decision.FOLD:
 			self.removeFromHand(activePlayer)
 			checkIfHandOver = True
 		
-		elif theDecision.name == "CHECK":
+		elif theDecision.name == decision.Decision.CHECK:
 			pass
 			
-		elif theDecision.name == "CALL":
+		elif theDecision.name == decision.Decision.CALL:
 			amountToCall = self.getCallAmount(activePlayer)
 			if not activePlayer.addToPot(amountToCall):
 				activePlayer.addToPot(activePlayer.bank)
 				
-		elif theDecision.name == "RAISE":
+		elif theDecision.name == decision.Decision.RAISE:
 			amountToCall = self.getCallAmount(activePlayer)
 			amountToRaise = theDecision.value
+			
+			#This person will be first to show cards in a showdown, unless another player re-raises
+			self.lastRaised = activePlayer.id
+			
 			if not activePlayer.addToPot(amountToCall + amountToRaise):
 				#Checks should have been in place to ensure we can't raise more than we have
 				assert False
 				
+		elif theDecision.name == decision.Decision.REVEAL:
+			activePlayer.revealCards()
+			self.canDenyReveal = True
+			
 		else:
 			
 			#Currently we shouldn't be able to do any other actions
@@ -237,7 +277,8 @@ class Game():
 		uncheckedBets = False
 		for p2 in self.players:
 			callAmount = self.getCallAmount(p2)
-			if p2.isInHand and callAmount > 0:
+			#Either we have an unchecked bet or we're all-in
+			if p2.bank > 0 and p2.isInHand and callAmount > 0:
 				uncheckedBets = True
 				
 		# If we've been once around and there are no unchecked raises, the betting round is over		
@@ -257,7 +298,7 @@ class Game():
 		self.numVisits = 1
 		self.bettingRound += 1
 		
-		if self.bettingRound <= 3:
+		if self.bettingRound <= 4:
 		
 			p = self.getPlayerByID(self.currentActive)
 			p.isActive = False
@@ -284,6 +325,15 @@ class Game():
 			
 				#The River
 				self.communityCards.append(self.deck.draw())
+				
+			elif self.bettingRound == 4:
+				
+				#Set the player to the first raised
+				p.isActive = False
+				p = self.getPlayerInHand(self.lastRaised)
+				p.isActive = True
+				self.currentActive = p.id
+				self.canDenyReveal = False
 		
 		# We've reached the end of all betting
 		else:
@@ -303,10 +353,9 @@ class Game():
 		
 		theWinner = None
 		
-		thePot = 0
+		maxWin = {}
 		for p in self.players:
-			thePot += p.pot
-			p.pot = 0
+			maxWin[p.id] = p.pot
 			
 		if self.numInHand == 1:
 			for p in self.players:
@@ -326,19 +375,68 @@ class Game():
 					
 			winningID = hand.winner(hands)
 					
-			theWinner = self.getPlayerByID(winningID)		
+					
 							
 				
 			
 		else:
 			assert False
 			
-		theWinner.bank += thePot
+		#if we had a winner:
+		if winningID >= 0:
+			theWinner = self.getPlayerByID(winningID)
+			#Give the winner what they are owed:
+			winnings = 0
+			for p in self.players:
+				deduction = min(maxWin[winningID], p.pot)
+				p.pot -= deduction
+				winnings += deduction	
+			theWinner.bank += winnings
+		
+		leftover = 0
+		
+		#Return any leftover pots back to the players:
+		for p in self.players:
+			
+			#Return pots back to players who were still in hand
+			if p.isInHand:
+				p.bank += p.pot
+				p.pot = 0
+		
+			#Count up those who folded to be distributed in tie
+			else:
+				leftover += p.pot
+				p.pot = 0
+		
+		#Assuming we had a tie and there were leftover spoils, we divide them
+		#between the players, distributing the remainder chips as fairly as possible		
+		if leftover > 0:
+			fraction = int(leftover/self.numInHand)
+			remainder = leftover - fraction*self.numInHand
+			for p in self.players:
+				if p.isInHand:
+					if remainder > 0:
+						oneChip = 1
+						remainder -= 1
+					else:
+						oneChip = 0
+					p.bank += fraction + oneChip
 		
 		#Remove bankrupt players from the game
 		for p in self.players:
-			if p.bank <= 0:
+			if p.bank < 0:
+				#Something went wrong and the player has negative money
+				assert False
+			elif p.bank == 0:
 				self.removeFromGame(p)
+			
+		
+		if theWinner != None:
+			displayText = theWinner.name + " has won this hand."
+		else:
+			displayText = "We had a tie!"
+			
+		self.passToPlayers({state.State.CONTINUE_ONLY: True, state.State.CONTINUE_TEXT:displayText})
 		
 		#Increment the dealer
 		
@@ -383,27 +481,27 @@ class Game():
 	#
 	#	Cleans the game states and passes them to each individual player.
 	#---------------------------------------------------------------------------	
-	def passToPlayers(self):
+	def passToPlayers(self, miscInfo = {}):
 			
 		for givenPlayer in self.players:		
 
 			#Clean game state
 			cleanPlayersInfo = []
 
-			for player in self.players:
-				info = player.getInfo()
-				if not player.hasRevealed and player.id != givenPlayer.id:
+			for p in self.players:
+				info = p.getInfo()
+				if not p.hasRevealed and p.id != givenPlayer.id:
 					info.pocket = [card.Card("?", "?"), card.Card("?", "?")]
 				cleanPlayersInfo.append(info)
 			
-			gameState = state.State(cleanPlayersInfo, self.communityCards)
+			gameState = state.State(cleanPlayersInfo, self.communityCards, miscInfo)
 			
-			decision = givenPlayer.giveDecision(gameState)
+			d = givenPlayer.giveDecision(gameState)
 			
 			if givenPlayer.isActive:
-				return decision
+				return d
 			else:
-				assert (decision.name == "WAIT"	or decision.name == "FORFEIT" or decision.name == "GAMEQUIT")
+				assert (d.name == decision.Decision.WAIT or d.name == decision.Decision.FORFEIT or d.name == decision.Decision.GAMEQUIT)
 				
 		#Something went wrong and now we don't have a decision.		
 		assert False
@@ -416,9 +514,9 @@ class Game():
 	def getActivePlayer(self):
 		numActive = 0
 		activePlayer = None
-		for player in self.players:
-			if player.isActive:
-				activePlayer = player
+		for p in self.players:
+			if p.isActive:
+				activePlayer = p
 				numActive += 1
 		assert numActive == 1
 		return activePlayer
@@ -468,14 +566,4 @@ class Game():
 
 if __name__ == '__main__':
 	
-	print "Testing constructor..."
-	
-	newGame = Game(settings.Settings(), interface.Interface())	
-	
-	assert len(newGame.players) == 4
-	
-	for player in newGame.players:
-		playerInfo = player.getInfo()
-		assert playerInfo.isValid()
-	
-	print "Test complete."		
+	pass	

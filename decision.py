@@ -14,6 +14,15 @@
 
 class Decision():
 	
+	WAIT = "WAIT"
+	FOLD = "FOLD"
+	CHECK = "CHECK"
+	REVEAL = "REVEAL"
+	CALL = "CALL"
+	RAISE = "RAISE"
+	FORFEIT = "FORFEIT"
+	GAMEQUIT = "GAMEQUIT"
+	
 	#---------------------------------------------------------------------------
 	#	Constructor
 	#
@@ -23,14 +32,14 @@ class Decision():
 		
 		name = name.upper()
 		
-		assert (name == "WAIT" or 
-				name == "FOLD" or
-				name == "CHECK" or
-				name == "REVEAL" or
-				name == "CALL" or
-				name == "RAISE" or
-				name == "FORFEIT" or
-				name == "GAMEQUIT")
+		assert (name == self.WAIT or 
+				name == self.FOLD or
+				name == self.CHECK or
+				name == self.REVEAL or
+				name == self.CALL or
+				name == self.RAISE or
+				name == self.FORFEIT or
+				name == self.GAMEQUIT)
 		
 		self.name = name.upper()
 		self.value = value

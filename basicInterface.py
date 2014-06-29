@@ -32,25 +32,23 @@ class BasicInterface(interface.Interface):
 	def setupGame(self):
 
 		default = settings.Settings()
-		return default
-		
+		return default	
 
 	#---------------------------------------------------------------------------
 	#	getDecision()
 	#---------------------------------------------------------------------------
 	def getDecision(self, theState):
-		
 
 		for playersInfo in theState.playersInfo:
 			if playersInfo.id == self.id:
-			
+		
 				thisPlayerInfo = playersInfo
-			
+		
 				if playersInfo.isActive == False:
 					#-------AUTO PUSH "WAIT" FOR INACTIVE PLAYERS-------
 					#
 					#---------------------------------------------------
-					return(decision.Decision("WAIT"))
+					return(decision.Decision(decision.Decision.WAIT))
 					#---------------------------------------------------
 					#
 					#---------------------------------------------------
@@ -62,64 +60,85 @@ class BasicInterface(interface.Interface):
 		self.drawState(theState)
 		
 		#Now get the user prompt
-		theDecision = decision.Decision("WAIT")
+		theDecision = decision.Decision()
 		
-		print " "
-		print "Your options:"
-		
-		while True:
+		if theState.miscInfo[state.State.CONTINUE_ONLY]:
 			
-			#Now display the user options
-			decisions = theState.decisionOptions(self.id)
-			for d in decisions:
-				
-				callAmount = theState.getCallAmount(thisPlayerInfo)
-				if d.name == "CALL":
-					dText = d.name + " (" + str(callAmount) + ")"
-				elif d.name == "RAISE" and callAmount > 0:
-					dText = "RAISE (+" + str(callAmount) + " TO CALL)"
-				else:
-					dText = d.name
-				print dText	
-				
+			print theState.miscInfo[state.State.CONTINUE_TEXT]
+			print "Enter any input to continue."
+			
+			raw_input()
+			
+		else:
+			#Normal state, we need to get the player's decision
 		
 			print " "
+			print "Your options:"
+		
+			while True:
 			
-			rawText = raw_input()
+				#Now display the user options
+				decisions = theState.decisionOptions(self.id)
+				canCall = False
+				canReveal = False
+				for d in decisions:
+				
+					callAmount = theState.getCallAmount(thisPlayerInfo)
+					if d.name == "CALL":
+						dText = d.name + " (" + str(callAmount) + ")"
+						canCall = True
+					elif d.name == "RAISE" and callAmount > 0:
+						dText = "RAISE (+" + str(callAmount) + " TO CALL)"
+					elif d.name == "REVEAL":
+						canReveal = True
+						dText = "REVEAL"
+					else:
+						dText = d.name
+					print dText	
+				
+		
+				print " "
 			
-			splitText = rawText.split()
+				rawText = raw_input()
 			
-			decisionText = splitText[0].upper()
+				splitText = rawText.split()
 			
-			if len(splitText) > 1:
-				try:
-					decisionValue = int(splitText[1])
-				except ValueError:
+				if len(splitText) >= 1:
+					decisionText = splitText[0].upper()
+				else:
+					decisionText = ""
+			
+				if len(splitText) > 1:
+					try:
+						decisionValue = int(splitText[1])
+					except ValueError:
+						decisionValue = 0
+				else:
 					decisionValue = 0
-			else:
-				decisionValue = 0
 			
-			if decisionText == "W" or decisionText == "WAIT":
-				theDecision = decision.Decision("WAIT")
-			elif decisionText == "F" or decisionText == "FOLD":
-				theDecision = decision.Decision("FOLD")	
-			elif decisionText == "C" or decisionText == "CHECK":
-				theDecision = decision.Decision("CHECK")			
-			elif decisionText == "R" or decisionText == "RAISE":
-				theDecision = decision.Decision("RAISE", decisionValue)
-			elif decisionText == "REVEAL":
-				theDecision = decision.Decision("REVEAL")
-			elif decisionText == "FORFEIT":
-				theDecision = decision.Decision("FORFEIT")
-			elif decisionText == "CALL":
-				theDecision = decision.Decision("CALL")
-			elif decisionText == "GAMEQUIT" or decisionText == "QUIT":
-				theDecision = decision.Decision("GAMEQUIT")
+				if decisionText == "W" or decisionText == "WAIT":
+					theDecision = decision.Decision(decision.Decision.WAIT)
+				elif decisionText == "F" or decisionText == "FOLD":
+					theDecision = decision.Decision(decision.Decision.FOLD)	
+				elif decisionText == "C" or decisionText == "CHECK" or decisionText == "CALL":
+					if not canCall or decisionText == "CHECK":
+						theDecision = decision.Decision(decision.Decision.CHECK)	
+					elif canCall or decisionText == "CALL":
+						theDecision = decision.Decision(decision.Decision.CALL)		
+				elif decisionText == "R" or decisionText == "RAISE" or decisionText == "REVEAL":
+					if not canReveal or decisionText == "RAISE":
+						theDecision = decision.Decision(decision.Decision.RAISE, decisionValue)
+					elif canReveal or decisionText == "REVEAL":
+						theDecision = decision.Decision(decision.Decision.REVEAL)
+				elif decisionText == "FORFEIT":
+					theDecision = decision.Decision(decision.Decision.FORFEIT)
+				elif decisionText == "GAMEQUIT" or decisionText == "QUIT":
+					theDecision = decision.Decision(decision.Decision.GAMEQUIT)
 								
-			if theState.isValidDecision(self.id, theDecision):
-				break
-			else:
-				print "Sorry, you can't do that right now."
+				if theState.isValidDecision(self.id, theDecision):
+					break
+				else:
+					print "Sorry, you can't do that right now."
 				
 		return theDecision		
 

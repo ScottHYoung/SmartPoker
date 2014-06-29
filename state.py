@@ -30,17 +30,35 @@ import decision
 #---------------------------------------------------------------------------
 class State():
 	
+	CONTINUE_ONLY = "CONTINUE_ONLY"
+	CONTINUE_TEXT = "CONTINUE_TEXT"
+	REVEAL_OR_FOLD = "REVEAL_OR_FOLD"
+	MUST_REVEAL = "MUST_REVEAL"
+	
 	#---------------------------------------------------------------------------
 	#	Constructor
 	#
 	#	Takes a list of playerInfo, a list of community cards and a list of strings
 	#	for miscellaneous information which can be resized as needed
 	#---------------------------------------------------------------------------
-	def __init__(self, playersInfo, communityCards, miscInfo = []):
+	def __init__(self, playersInfo, communityCards, miscInfo = {}):
 		
 		self.playersInfo = playersInfo
 		self.communityCards = communityCards
 		self.miscInfo = miscInfo
+		
+		#Apply defaults to miscInfo
+		if not self.CONTINUE_ONLY in self.miscInfo:
+			self.miscInfo[self.CONTINUE_ONLY] = False
+			
+		if not self.CONTINUE_TEXT in self.miscInfo:
+			self.miscInfo[self.CONTINUE_TEXT] = ""
+			
+		if not self.REVEAL_OR_FOLD in self.miscInfo:
+			self.miscInfo[self.REVEAL_OR_FOLD] = False
+			
+		if not self.MUST_REVEAL in self.miscInfo:
+			self.miscInfo[self.MUST_REVEAL] = False							
 		
 	#---------------------------------------------------------------------------
 	#	isValid
@@ -120,24 +138,33 @@ class State():
 				
 		assert playerInfo != None
 				
-		options.append(decision.Decision("GAMEQUIT"))
-		options.append(decision.Decision("FORFEIT"))
+		options.append(decision.Decision(decision.Decision.GAMEQUIT))
+		options.append(decision.Decision(decision.Decision.FORFEIT))
 		
 		if thisPlayer.isActive:
 			
-			#Unmatched raises in pot and we're not all in
-			if thisPlayer.pot < mostInPot and thisPlayer.bank > 0 :
-				options.append(decision.Decision("CALL"))
-				options.append(decision.Decision("FOLD"))
-			else:
-				options.append(decision.Decision("CHECK"))
+			#We're in a showdown
+			if self.miscInfo[self.REVEAL_OR_FOLD]:
+				options.append(decision.Decision(decision.Decision.FOLD))
+				options.append(decision.Decision(decision.Decision.REVEAL))
+			elif self.miscInfo[self.MUST_REVEAL]:	
+				options.append(decision.Decision(decision.Decision.REVEAL))
 				
-			#We can also raise the stakes if we have the money (otherwise all we can do is call)	
-			if thisPlayer.bank > mostInPot-thisPlayer.pot :
-				options.append(decision.Decision("RAISE"))
+			#Normal play
+			else:
+				#Unmatched raises in pot and we're not all in
+				if thisPlayer.pot < mostInPot and thisPlayer.bank > 0 :
+					options.append(decision.Decision(decision.Decision.CALL))
+					options.append(decision.Decision(decision.Decision.FOLD))
+				else:
+					options.append(decision.Decision(decision.Decision.CHECK))
+				
+				#We can also raise the stakes if we have the money (otherwise all we can do is call)	
+				if thisPlayer.bank > mostInPot-thisPlayer.pot :
+					options.append(decision.Decision(decision.Decision.RAISE))
 			
 		else:
-			options.append(decision.Decision("WAIT"))
+			options.append(decision.Decision(decision.Decision.WAIT))
 			
 		return options
 		
@@ -146,7 +173,7 @@ class State():
 	#
 	#	Determines whether a given decision is an available option for the player
 	#---------------------------------------------------------------------------	
-	def isValidDecision(self, playerID, decision):
+	def isValidDecision(self, playerID, d):
 
 		options = self.decisionOptions(playerID)
 		
@@ -158,9 +185,10 @@ class State():
 		
 		isValid = False
 		for option in options:
-			if option.name == decision.name:
+			if option.name == d.name:
 				
-				if option.name == "RAISE" and (decision.value + self.getCallAmount(thisPlayer)) > thisPlayer.bank:
+				if (option.name == decision.Decision.RAISE and 
+					((d.value + self.getCallAmount(thisPlayer)) > thisPlayer.bank or d.value <= 0)):
 					isValid = False
 				else:
 					isValid = True
