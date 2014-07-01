@@ -360,7 +360,7 @@ class Game():
 		if self.numInHand == 1:
 			for p in self.players:
 				if p.isInHand:
-					theWinner = p
+					winningIDs = [p.id]
 					
 		elif self.numInHand > 1:
 			
@@ -373,7 +373,7 @@ class Game():
 				if p.isInHand:
 					hands.append(hand.Hand(p.pocket + self.communityCards, ID = p.id))
 					
-			winningID = hand.winner(hands)
+			winningIDs = hand.winner(hands)
 					
 					
 							
@@ -381,46 +381,59 @@ class Game():
 			
 		else:
 			assert False
+		
+		displayText = ""	
+		for ID in winningIDs:
+			p = self.getPlayerByID(ID)
+			if len(displayText) == 0:
+				displayText += p.name
+				token = " has"
+			else:
+				displayText += ", "+p.name
+				token = " have"
+		displayText += token + " won this hand!"
+		
+		splitPots = []
+		while len(winningIDs) > 0:
 			
-		#if we had a winner:
-		if winningID >= 0:
-			theWinner = self.getPlayerByID(winningID)
-			#Give the winner what they are owed:
-			winnings = 0
+			#First, we need to create split pots for winners who only partially contributed
+			lowestPotContribution = -10
 			for p in self.players:
-				deduction = min(maxWin[winningID], p.pot)
-				p.pot -= deduction
-				winnings += deduction	
-			theWinner.bank += winnings
-		
-		leftover = 0
-		
-		#Return any leftover pots back to the players:
-		for p in self.players:
+				if (p.id in winningIDs) and (p.pot < lowestPotContribution or lowestPotContribution == -10):
+					lowestPotContribution = p.pot
 			
-			#Return pots back to players who were still in hand
-			if p.isInHand:
+			#Make a new split pot
+			potAmount = 0		
+			for p in self.players:
+				deduction = min(lowestPotContribution, p.pot)
+				p.pot -= deduction
+				potAmount += deduction
+				
+			splitIDs = winningIDs[:]
+			splitPots.append((potAmount, splitIDs))
+			
+			#Remove all players who are no longer inHand from the winningIDs
+			for p in self.players:
+				if p.id in winningIDs and p.pot <= 0:
+					winningIDs.remove(p.id)
+					
+		#Any remaining money should return back to the original owner
+		for p in self.players:
 				p.bank += p.pot
 				p.pot = 0
-		
-			#Count up those who folded to be distributed in tie
-			else:
-				leftover += p.pot
-				p.pot = 0
-		
-		#Assuming we had a tie and there were leftover spoils, we divide them
-		#between the players, distributing the remainder chips as fairly as possible		
-		if leftover > 0:
-			fraction = int(leftover/self.numInHand)
-			remainder = leftover - fraction*self.numInHand
-			for p in self.players:
-				if p.isInHand:
-					if remainder > 0:
-						oneChip = 1
-						remainder -= 1
-					else:
-						oneChip = 0
-					p.bank += fraction + oneChip
+					
+		#Now we need to distribute the splitPots (or single pot if there was no all-in plays)			
+		for splitPot in splitPots:	
+			amount, ids = splitPot
+			fraction = int(amount / len(ids))
+			remainder = amount % len(ids)
+			for ID in ids:
+				p = self.getPlayerByID(ID)
+				p.bank += fraction
+				if remainder > 0:
+					p.bank += remainder
+					remainder -= 1
+
 		
 		#Remove bankrupt players from the game
 		for p in self.players:
@@ -429,12 +442,6 @@ class Game():
 				assert False
 			elif p.bank == 0:
 				self.removeFromGame(p)
-			
-		
-		if theWinner != None:
-			displayText = theWinner.name + " has won this hand."
-		else:
-			displayText = "We had a tie!"
 			
 		self.passToPlayers({state.State.CONTINUE_ONLY: True, state.State.CONTINUE_TEXT:displayText})
 		

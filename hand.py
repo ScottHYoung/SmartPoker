@@ -62,7 +62,7 @@ class Hand():
 		
 		cardsInFlush = self.flush()
 		if cardsInFlush != None:
-			return (5, cardsInFlush[0], cardsInFlush[1], cardsInFlush[2], cardsInFlush[3], cardsInFlush[4], cardsInFlush[5])
+			return (5, cardsInFlush[0], cardsInFlush[1], cardsInFlush[2], cardsInFlush[3], cardsInFlush[4])
 		
 		cardsInStraight = self.straight()
 		if cardsInStraight != None:
@@ -81,7 +81,7 @@ class Hand():
 			return (1, cardsInPair[0], cardsInPair[1], cardsInPair[2], cardsInPair[3], 0)
 			
 		cardsInHighCard = self.highCard()
-		return (0, cardsInHighCard[0], cardsInHighCard[1], cardsInHighCard[2], cardsInHighCard[3], cardsInHighCard[4], cardsInHighCard[5])
+		return (0, cardsInHighCard[0], cardsInHighCard[1], cardsInHighCard[2], cardsInHighCard[3], cardsInHighCard[4])
 		
 	#--------------------------------------------------------------------------
 	#	straightFlush()
@@ -323,10 +323,17 @@ class Hand():
 #	Evaluates a list of hand objects and returns the id of the winning hand
 #--------------------------------------------------------------------------
 def winner(hands):
+	bestHand = [-1]
+	bestScore = (-1,-1,-1,-1,-1,-1)
+	for h in hands:
+		score = h.evaluate()
+		if score > bestScore:
+			bestScore = score
+			bestHand = [h.id]
+		elif score == bestScore:
+			bestHand.append(h.id)
 	
-	winningID = hands[0].id#-1
-	
-	return winningID
+	return bestHand
 	
 	
 #========================================
@@ -531,3 +538,125 @@ if __name__ == "__main__":
 	assert result[4] == 5
 	
 	print "Test complete."	
+	
+	print "Testing evaluate()"
+
+	print "\tStraight Flush"
+	SF = Hand([card.Card("H", "K"), card.Card("H", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("H", "4"), card.Card("H", "8")])
+			
+	result = SF.evaluate()
+	assert result != None
+	assert result[0] == 8
+	assert result[1] == 6
+	assert result[2] == 0
+	assert result[3] == 0
+	assert result[4] == 0
+	assert result[5] == 0
+
+	print "\tFour-of-a-Kind"
+	FK = Hand([card.Card("H", "K"), card.Card("H", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "K"), card.Card("D", "K"), card.Card("S", "K")])
+			
+	result = FK.evaluate()
+	assert result != None
+	assert result[0] == 7
+	assert result[1] == 13
+	assert result[2] == 6
+	assert result[3] == 0
+	assert result[4] == 0
+	assert result[5] == 0
+
+	print "\tFull House"
+	FH = Hand([card.Card("H", "K"), card.Card("H", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "K"), card.Card("D", "6"), card.Card("S", "6")])
+			
+	result = FH.evaluate()
+	assert result != None
+	assert result[0] == 6
+	assert result[1] == 6
+	assert result[2] == 13
+	assert result[3] == 0
+	assert result[4] == 0
+	assert result[5] == 0
+
+	print "\tFlush"
+	F = Hand([card.Card("H", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "4"), card.Card("H", "8")])
+			
+	result = F.evaluate()
+	assert result != None
+	assert result[0] == 5
+	assert result[1] == 13
+	assert result[2] == 8
+	assert result[3] == 5
+	assert result[4] == 3
+	assert result[5] == 2
+	
+	print "\tStraight"
+	S = Hand([card.Card("D", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("H", "2"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "4"), card.Card("H", "8")])
+			
+	result = S.evaluate()
+	assert result != None
+	assert result[0] == 4
+	assert result[1] == 6
+	assert result[2] == 0
+	assert result[3] == 0
+	assert result[4] == 0
+	assert result[5] == 0	
+	
+	print "\tThree-of-a-Kind"
+	T = Hand([card.Card("D", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("D", "8"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "8"), card.Card("H", "8")])
+			
+	result = T.evaluate()
+	assert result != None
+	assert result[0] == 3
+	assert result[1] == 8
+	assert result[2] == 13
+	assert result[3] == 12
+	assert result[4] == 0
+	assert result[5] == 0	
+
+	print "\tTwo Pairs"
+	TP = Hand([card.Card("D", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("D", "8"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "5"), card.Card("H", "8")])
+			
+	result = TP.evaluate()
+	assert result != None
+	assert result[0] == 2
+	assert result[1] == 8
+	assert result[2] == 5
+	assert result[3] == 13
+	assert result[4] == 0
+	assert result[5] == 0	
+	
+	print "\tPair"
+	P = Hand([card.Card("D", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("D", "8"),card.Card("H", "5"),
+			 card.Card("C", "Q"), card.Card("S", "5"), card.Card("H", "J")])
+			
+	result = P.evaluate()
+	assert result != None
+	assert result[0] == 1
+	assert result[1] == 5
+	assert result[2] == 13
+	assert result[3] == 12
+	assert result[4] == 11
+	assert result[5] == 0
+	
+	print "\tHigh Card"
+	HC = Hand([card.Card("D", "K"), card.Card("D", "6"), card.Card("H", "3"), card.Card("D", "8"),card.Card("H", "A"),
+			 card.Card("C", "Q"), card.Card("S", "5"), card.Card("H", "J")])
+			
+	result = HC.evaluate()
+	assert result != None
+	assert result[0] == 0
+	assert result[1] == 14
+	assert result[2] == 13
+	assert result[3] == 12
+	assert result[4] == 11
+	assert result[5] == 8		
+	
+	print "Test complete."				
+	

@@ -8,7 +8,7 @@
 #	time the player requires a decision.
 #---------------------------------------------------------------------------
 
-import os, interface, state, decision, settings
+import os, interface, state, decision, settings, card
 
 #---------------------------------------------------------------------------
 # basicInterface

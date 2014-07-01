@@ -10,6 +10,8 @@ the progress!
 
 To Do:
 
+- Game class:
+	-Need to rigorously test all gameplay scenarios
 - Hand class:
 	-Finish winner() function
 - Add AI class

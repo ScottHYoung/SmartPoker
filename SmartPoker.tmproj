@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>README.txt</string>
 			<key>lastUsed</key>
-			<date>2014-06-29T12:31:05Z</date>
+			<date>2014-06-30T12:04:02Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -60,7 +60,7 @@
 			<key>filename</key>
 			<string>hand.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-29T12:31:05Z</date>
+			<date>2014-06-30T11:38:47Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -72,7 +72,7 @@
 			<key>filename</key>
 			<string>game.py</string>
 			<key>lastUsed</key>
-			<date>2014-06-29T11:13:18Z</date>
+			<date>2014-06-30T12:04:02Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -102,7 +102,7 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>17</integer>
+				<integer>70</integer>
 				<key>line</key>
 				<integer>13</integer>
 			</dict>
@@ -158,44 +158,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>15</integer>
 				<key>line</key>
-				<integer>562</integer>
+				<integer>382</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>538</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>42</integer>
-				<key>line</key>
-				<integer>564</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>562</integer>
-			</dict>
+			<integer>370</integer>
 		</dict>
 		<key>hand.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>66</integer>
+				<integer>16</integer>
 				<key>line</key>
-				<integer>494</integer>
+				<integer>335</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>474</integer>
+			<integer>325</integer>
 		</dict>
 		<key>interface.py</key>
 		<dict>
