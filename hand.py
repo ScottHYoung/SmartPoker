@@ -130,13 +130,13 @@ class Hand():
 	#--------------------------------------------------------------------------	
 	def fullHouse(self):
 		ranks = self.groupByRank()
-		for r in range(14, 0, -1):
+		for r in range(14, 1, -1):
 			
 			if len(ranks[r]) >= 3:
 				#Delete the three of a kind and look for a pair
 				ranks[r] = ranks[r][3:]
 				
-				for p in range(14, 0, -1):
+				for p in range(14, 1, -1):
 					if len(ranks[p]) >= 2:
 						return [r, p]
 		
@@ -200,19 +200,19 @@ class Hand():
 	#--------------------------------------------------------------------------	
 	def twoPairs(self):
 		ranks = self.groupByRank()
-		for r in range(14, 0, -1):
+		for r in range(14, 1, -1):
 			
 			if len(ranks[r]) >= 2:
 				#Delete the pair and look for another
 				ranks[r] = ranks[r][2:]
 				
-				for p in range(14, 0, -1):
+				for p in range(14, 1, -1):
 					if len(ranks[p]) >= 2:
 						
 						#Delete the second pair and look for a kicker
 						ranks[p] = ranks[p][2:]
 						
-						for k in range(14, 0, -1):
+						for k in range(14, 1, -1):
 							if len(ranks[k]) >= 1:
 								return [r, p, k]
 		
@@ -244,14 +244,14 @@ class Hand():
 	#--------------------------------------------------------------------------
 	def nOfAKind(self, n):
 		ranks = self.groupByRank()
-		for r in range(14, 0, -1):
+		for r in range(14, 1, -1):
 		
 			if len(ranks[r]) >= n:
 				#Delete the n of a kind and start looking for the kicker
 				ranks[r] = ranks[r][n:]
 				returnVal = [r]
 				for numKickers in range(5-n):
-					for k in range(14, 0, -1):
+					for k in range(14, 1, -1):
 						if len(ranks[k]) >= 1:
 							returnVal.append(k)
 							ranks[k] = ranks[k][1:]
@@ -310,6 +310,103 @@ class Hand():
 				groups[1].append(c)
 
 		return groups	
+		
+	#--------------------------------------------------------------------------
+	#	handName()
+	#
+	#	Evaluates the hand and returns a string with the name of the hand for
+	#	display purposes.
+	#
+	#--------------------------------------------------------------------------	
+	def handName(self):
+		
+		text = "Nothing."
+		ranking = self.evaluate()
+		if ranking[0] == 8:
+			if ranking[1] == 14:
+				text = "royal flush!"
+			else:
+				text = self.getRankString(ranking[1])+"-high straight flush."
+			
+		elif ranking[0] == 7:
+			text = "four "+self.getRankStringPlural(ranking[1])+"."
+		
+		elif ranking[0] == 6:
+			text = self.getRankStringPlural(ranking[1])+" full of "+self.getRankStringPlural(ranking[2])+"."
+		
+		elif ranking[0] == 5:
+			text = "flush."
+		
+		elif ranking[0] == 4:
+			text = self.getRankString(ranking[1])+"-high straight."
+		
+		elif ranking[0] == 3:
+			text = "three "+self.getRankStringPlural(ranking[1])+"."
+		
+		elif ranking[0] == 2:
+			text = "a pair of "+self.getRankStringPlural(ranking[1])+" and a pair of "+self.getRankStringPlural(ranking[2])+"."
+		
+		elif ranking[0] == 1:
+			text = "a pair of "+self.getRankStringPlural(ranking[1])+"."
+		
+		elif ranking[0] == 0:
+			text = self.getRankString(ranking[1])+" high."
+		
+		else:
+			text = "nothing."
+			
+		return text
+	
+	#--------------------------------------------------------------------------
+	#	getRankStringPlural()
+	#
+	#	Pluralizes the result from getRankString()
+	#--------------------------------------------------------------------------			
+	def getRankStringPlural(self, rank):
+		if rank != 6:
+			return self.getRankString(rank)+"s"
+		else:
+			return self.getRankString(rank)+"es"
+		
+	#--------------------------------------------------------------------------
+	#	getRankString()
+	#
+	#	Given a number between 1 and 14, returns a string describing the rank
+	#
+	#--------------------------------------------------------------------------			
+	def getRankString(self, rank):
+		if rank == 1:
+			rankStr = "ace"
+		elif rank == 2:
+			rankStr = "two"
+		elif rank == 3:
+			rankStr = "three"
+		elif rank == 4:
+			rankStr = "four"
+		elif rank == 5:
+			rankStr = "five"
+		elif rank == 6:
+			rankStr = "six"
+		elif rank == 7:
+			rankStr = "seven"
+		elif rank == 8:
+			rankStr = "eight"
+		elif rank == 9:
+			rankStr = "nine"
+		elif rank == 10:
+			rankStr = "ten"
+		elif rank == 11:
+			rankStr = "jack"
+		elif rank == 12:
+			rankStr = "queen"
+		elif rank == 13:
+			rankStr = "king"
+		elif rank == 14:
+			rankStr = "ace"
+		else:
+			rankStr = "?"
+		
+		return rankStr
 		
 							
 #--------------------------------------------------------------------------
@@ -440,8 +537,8 @@ if __name__ == "__main__":
 	result = h.fullHouse()
 	assert result != None and result[0] == 14 and result[1] == 5			
 		
-	h = Hand([card.Card("H", "K"), card.Card("D", "A"), card.Card("H", "3"), card.Card("S", "3"),card.Card("H", "5"),
-			 card.Card("C", "A"), card.Card("S", "J"), card.Card("S", "5"), card.Card("S", "6")])	
+	h = Hand([card.Card("H", "K"), card.Card("D", "A"), card.Card("H", "A"), card.Card("S", "3"),card.Card("H", "10"),
+			 card.Card("C", "A")])	
 	
 	result = h.fullHouse()
 	assert result == None

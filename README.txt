@@ -10,8 +10,4 @@ the progress!
 
 To Do:
 
-- Game class:
-	-Need to rigorously test all gameplay scenarios
-- Hand class:
-	-Finish winner() function
-- Add AI class
+-  Finish AI_random and get game set up for playing against non-human controlled opponents

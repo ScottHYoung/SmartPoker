@@ -62,7 +62,7 @@ class BasicInterface(interface.Interface):
 		#Now get the user prompt
 		theDecision = decision.Decision()
 		
-		if theState.miscInfo[state.State.CONTINUE_ONLY]:
+		if theState.miscInfo[state.State.CONTINUE_ONLY] or thisPlayerInfo.isActive == False:
 			
 			print theState.miscInfo[state.State.CONTINUE_TEXT]
 			print "Enter any input to continue."
@@ -175,7 +175,8 @@ class BasicInterface(interface.Interface):
 				
 				playerStr += "\t\t"
 				
-				playerStr += self.cardString(p.pocket[0])+" "+self.cardString(p.pocket[1])
+				if p.isInHand:
+					playerStr += self.cardString(p.pocket[0])+" "+self.cardString(p.pocket[1])
 			
 				playerStr += "\t\t"
 				playerStr += str(p.bank)

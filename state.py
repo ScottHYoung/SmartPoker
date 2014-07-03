@@ -160,8 +160,16 @@ class State():
 					options.append(decision.Decision(decision.Decision.CHECK))
 				
 				#We can also raise the stakes if we have the money (otherwise all we can do is call)	
-				if thisPlayer.bank > mostInPot-thisPlayer.pot :
-					options.append(decision.Decision(decision.Decision.RAISE))
+				if thisPlayer.bank > mostInPot-thisPlayer.pot:
+					
+					#Quickly check we're not the only player left in betting
+					numCanStillCall = 0
+					for p in self.playersInfo:
+						if p.isInHand and p.bank > mostInPot-p.pot:
+							numCanStillCall += 1
+					
+					if numCanStillCall > 1:
+						options.append(decision.Decision(decision.Decision.RAISE))
 			
 		else:
 			options.append(decision.Decision(decision.Decision.WAIT))

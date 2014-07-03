@@ -99,6 +99,12 @@ class Game():
 		
 		#Check that the game hasn't ended
 		if self.numInGame <= 1:
+			numInGame = 0
+			for p in self.players:
+				if p.isInGame == True:
+					numInGame += 1
+			assert numInGame == self.numInGame
+			print numInGame
 			return True
 		
 		#Put everyone still playing back in the hand
@@ -303,7 +309,7 @@ class Game():
 			p = self.getPlayerByID(self.currentActive)
 			p.isActive = False
 			
-			p = self.getPlayerInHand((self.currentActive + 1) % self.numPlayers)
+			p = self.getPlayerInHand((self.currentDealer + 1) % self.numPlayers)
 			p.isActive = True
 			self.currentActive = p.id
 		
@@ -382,16 +388,22 @@ class Game():
 		else:
 			assert False
 		
-		displayText = ""	
+		displayText = ""
+		handName = ""	
 		for ID in winningIDs:
 			p = self.getPlayerByID(ID)
 			if len(displayText) == 0:
 				displayText += p.name
-				token = " has"
+				#If the winner revealed their hand include some text to show who won
+				if p.hasRevealed:
+					handName = " with "+hand.Hand(p.pocket + self.communityCards).handName()
+				else:
+					handName = "."
+				token = " has won"
 			else:
 				displayText += ", "+p.name
-				token = " have"
-		displayText += token + " won this hand!"
+				token = " have tied"
+		displayText += token + " this hand" + handName
 		
 		splitPots = []
 		while len(winningIDs) > 0:
@@ -469,8 +481,9 @@ class Game():
 	#	Takes the player out of the hand
 	#---------------------------------------------------------------------------	
 	def removeFromHand(self, thePlayer):
-		thePlayer.isInHand = False
-		self.numInHand -= 1	
+		if thePlayer.isInHand:
+			thePlayer.isInHand = False
+			self.numInHand -= 1	
 		
 	#---------------------------------------------------------------------------
 	#	removeFromGame()
@@ -478,10 +491,10 @@ class Game():
 	#	Takes the player out of the hand and the game
 	#---------------------------------------------------------------------------	
 	def removeFromGame(self, thePlayer):
-		thePlayer.isInHand = False
-		self.numInHand -= 1	
-		thePlayer.isInGame = False
-		self.numInGame -= 1			
+		self.removeFromHand(thePlayer)
+		if thePlayer.isInGame:
+			thePlayer.isInGame = False
+			self.numInGame -= 1			
 		
 	#---------------------------------------------------------------------------
 	#	passToPlayers()
