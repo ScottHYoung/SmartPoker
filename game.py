@@ -12,7 +12,7 @@
 #---------------------------------------------------------------------------
 
 import settings, decision, state, card, interface, player, deck, human, hand
-import testInterface
+import AI_random
 
 #---------------------------------------------------------------------------
 #	Game class
@@ -41,8 +41,24 @@ class Game():
 				nameGen = "Fred"
 			elif i == 3:
 				nameGen = "Doug"
-			else:
-				nameGen = "Player"+str(i)
+			elif i == 4:
+				nameGen = "Greg"
+			elif i == 5:
+				nameGen = "Paul"
+			elif i == 6:
+				nameGen = "Dino"
+			elif i == 7:
+				nameGen = "Tony"
+			elif i == 8:
+				nameGen = "Erza"
+			elif i == 9:
+				nameGen = "Glen"
+			elif i == 10:
+				nameGen = "Cali"
+			elif i == 11:
+				nameGen = "Elsa"
+			elif i == 12:
+				nameGen = "Zach"
 			
 			#Change these to human/AI later
 			if theInterfaceConstructor != None:
@@ -54,9 +70,9 @@ class Game():
 			if i < (self.settings.numPlayers - self.settings.numAIs):
 				newPlayer = human.Human(theInterface, i, nameGen, self.settings.numChips)
 			else:
-				
+				newPlayer = AI_random.AI_Random(i, nameGen, self.settings.numChips)
 				#Currently a Human, replace this with the AI class later
-				newPlayer = human.Human(theInterface, i, nameGen, self.settings.numChips)
+				#newPlayer = human.Human(theInterface, i, nameGen, self.settings.numChips)
 				
 			if i == 0:
 				newPlayer.isActive = True
@@ -519,6 +535,8 @@ class Game():
 			d = givenPlayer.giveDecision(gameState)
 			
 			if givenPlayer.isActive:
+				#Make sure the decision returned by the AI or Human player was valid
+				assert gameState.isValidDecision(givenPlayer.id, d)
 				return d
 			else:
 				assert (d.name == decision.Decision.WAIT or d.name == decision.Decision.FORFEIT or d.name == decision.Decision.GAMEQUIT)

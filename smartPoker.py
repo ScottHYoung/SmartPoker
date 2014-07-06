@@ -18,4 +18,8 @@ import basicInterface, game
 SetupInterface = basicInterface.BasicInterface()
 theSettings = SetupInterface.setupGame()
 
+#Change default settings
+theSettings.numPlayers = 6
+theSettings.numAIs = theSettings.numPlayers-1
+
 newGame = game.Game(theSettings,theInterfaceConstructor = basicInterface.BasicInterface)

@@ -64,6 +64,21 @@ class Deck():
 			return card
 		else:
 			return None
+
+	#---------------------------------------------------------------------------
+	#	pull()
+	#	
+	#	Takes a specific card from the deck, the card's rank can be given as
+	#	a numeric rank or a string number depending on which is easier
+	#---------------------------------------------------------------------------
+	def pull(self, suit, number="!", rank=-2):
+		i = 0
+		for c in self.cards:
+			if c.suit == suit and (rank == c.getRank() or number == c.number):
+				self.cards = self.cards[:i] + self.cards[i+1:]		
+				break
+			i+=1
+	
 	
 #========================================
 #	TESTS

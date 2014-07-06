@@ -9,7 +9,7 @@
 #---------------------------------------------------------------------------
 
 import random
-import player, interface, state
+import player, interface, state, decision
 
 #---------------------------------------------------------------------------
 # AI_random class
@@ -33,32 +33,44 @@ class AI_Random(player.Player):
 	#---------------------------------------------------------------------------
 	def giveDecision(self, theState):	
 		
-		decisions = theState.decisionOptions()
+		decisions = theState.decisionOptions(self.id)
 		
 		choice = random.randint(0,100)
 		theDecision = None
-		#Generally folding, checking or revealing should always be an option
+		#Generally waiting, folding, checking or revealing should always be an option
 		for d in decisions:
-			if d.name == decision.Decision.FOLD or d.name == decision.Decision.CHECK or d.name == decision.Decision.REVEAL:
+			if (d.name == decision.Decision.WAIT or d.name == decision.Decision.FOLD or 
+				d.name == decision.Decision.CHECK or d.name == decision.Decision.REVEAL):
 				theDecision = d
 				
 		#Sanity test that we could have checked, folded or revealed		
 		assert theDecision != None
+		
+		#More players, play less aggressively (2 players = 30%, 3 = 20%, 4 = 15%, ... 12 = 5%)
+		raiseChance = 60/len(theState.playersInfo)
+		
+		
+		for p in theState.playersInfo:
+			if p.id == self.id:
+				me = p
+		
+		callAmount = theState.getCallAmount(me)
+		if callAmount > me.bank:
+			callAmount = me.bank
+		possibleRaise = me.bank - callAmount		
+				
+		#We'll call if the call amount is low, relative to our bank, or low relative to our pot
+		callChance = raiseChance + 60 - int(60*(callAmount/(me.bank+1))) + int(100*(callAmount/(me.pot+1)))
 				
 		for d in decisions:
-			if d.name == decision.Decision.CALL and choice > 50:
+			if d.name == decision.Decision.CALL and choice > 99-callChance:
 				theDecision = d
-			if d.name == decision.Decision.RAISE and choice > 85:
-				for p in theState.playersInfo:
-					if p.id = self.id:
-						me = p
-				
-				possibleRaise = me.bank - theState.getCallAmount()
+			if d.name == decision.Decision.RAISE and choice > 99-raiseChance:
 				myRaise = possibleRaise
 				if possibleRaise > 0:
-					if choice > 96: #go all-in
+					if choice > 99-(raiseChance/5): #go all-in
 						myRaise = possibleRaise
-					elif choice > 90: #big raise
+					elif choice > 99-(raiseChance/3): #big raise
 						myRaise = int(me.bank/4) 
 						if myRaise > possibleRaise:
 							myRaise = possibleRaise

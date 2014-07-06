@@ -15,6 +15,8 @@ import os, interface, state, decision, settings, card
 #---------------------------------------------------------------------------
 class BasicInterface(interface.Interface):
 	
+	#Turn on when we want to manually test with all-human players
+	AUTO_PUSH_WAIT = False
 	
 	#---------------------------------------------------------------------------
 	#	Constructor
@@ -44,7 +46,7 @@ class BasicInterface(interface.Interface):
 		
 				thisPlayerInfo = playersInfo
 		
-				if playersInfo.isActive == False:
+				if playersInfo.isActive == False and self.AUTO_PUSH_WAIT:
 					#-------AUTO PUSH "WAIT" FOR INACTIVE PLAYERS-------
 					#
 					#---------------------------------------------------

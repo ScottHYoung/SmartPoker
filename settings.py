@@ -24,10 +24,10 @@ class Settings():
 	#---------------------------------------------------------------------------	
 	def __init__(self, settings = []):
 		
-		self.numPlayers = 4		#[0]
-		self.numChips = 100		#[1]
-		self.smallBlind = 5		#[2]
-		self.numAIs = 3			#[3]
+		self.numPlayers = 4						#[0]
+		self.numChips = 100						#[1]
+		self.smallBlind = 5						#[2]
+		self.numAIs = 3							#[3]
 		
 		i = 0
 		for setting in settings:

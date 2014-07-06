@@ -182,6 +182,10 @@ class State():
 	#	Determines whether a given decision is an available option for the player
 	#---------------------------------------------------------------------------	
 	def isValidDecision(self, playerID, d):
+		
+		#If there was no other valid options, this should be valid
+		if self.miscInfo[self.CONTINUE_ONLY]:
+			return True
 
 		options = self.decisionOptions(playerID)
 		
