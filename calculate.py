@@ -7,41 +7,62 @@
 #	determining which moves are prudent.
 #---------------------------------------------------------------------------
 
+from math import factorial
 import card, hand, deck
+
+#---------------------------------------------------------------------------
+#	comparePocketsFast - This function will, compare two pockets using an
+#	optimized method of calculation to be faster, but still return an
+#	identical result to comparePockets()
+#
+#	p1, and p2 should be in the format [Card1a, Card1b], [Card2a, Card2b]
+#---------------------------------------------------------------------------
+def comparePocketsFast(p1, p2, c = []):
+	
+	pass
 
 #---------------------------------------------------------------------------
 #	comparePockets - This function will, through brute force compare the 
 #	hands generated from all possible permutations of cards and return the
-#	number (num wins by p1) - (num wins by p2). 
+#	number of wins, ties and losses out of a total of 1712304 possibilities
 #
 #	p1, and p2 should be in the format [Card1a, Card1b], [Card2a, Card2b]
+#	optionally can pass a set of community cards to fix.
 #---------------------------------------------------------------------------
-def comparePockets(p1, p2):
+def comparePockets(p1, p2, c = []):
 	
 	d = deck.Deck()
 	d.pull(p1[0].suit, p1[0].number)
 	d.pull(p1[1].suit, p1[1].number)
 	d.pull(p2[0].suit, p2[0].number)
 	d.pull(p2[1].suit, p2[1].number)
-	assert len(d.cards) == 48
+	for ci in c:
+		d.pull(ci.suit, ci.number)
+		
+	assert len(d.cards) == 48 - len(c)
 	
 	seq = [4, 3, 2, 1, 0]
+	seq = seq[len(c):]
 	numSeq = 1
-	score = 0
+	wins = 0
+	ties = 0
+	losses = 0
 	handOne = hand.Hand([], 1)
 	handTwo = hand.Hand([], 2)
 	while True:
 		
-		communityCards = getComboFromSequence(seq, d.cards)
+		communityCards = getComboFromSequence(seq, d.cards) + c
 		handOne.cards = p1 + communityCards
 		handTwo.cards = p2 + communityCards
 		
 		winners = hand.winner([handOne, handTwo])
 		if len(winners) == 1:
 			if winners[0] == 1:
-				score += 1
+				wins += 1
 			else:
-				score -= 1
+				losses += 1
+		else:
+			ties += 1
 		
 		seq = getNextCombinationSequence(seq, d.cards)
 		numSeq += 1
@@ -53,7 +74,7 @@ def comparePockets(p1, p2):
 		if not seq:
 			break 
 			
-	return score
+	return (wins, ties, losses)
 	
 #---------------------------------------------------------------------------
 #	getNextCombinationSequence(seq, l)
@@ -97,16 +118,51 @@ def getComboFromSequence(seq, l):
 		combo.append(l[s])
 		
 	return combo
+	
+#---------------------------------------------------------------------------
+#	choose(n, r)
+#	
+#	Returns nCr = n! / ((n-r)! * r!)
+#---------------------------------------------------------------------------
+def choose(n, r):
+	
+	assert n >= r
+	
+	if n == r:
+		return 1
+	
+	#First, make r equal to whichever is higher r-n or r, since the calculation
+	#will be equivalent but we'll have smaller intermediate numbers
+	if r < n-r:
+		r = n-r
+		
+	#Now compute n! / r! 
+	num = 1
+	for i in range(r+1, n+1):
+		num *= i
+	
+	#Now divide by (n-r)!
+	den = 1
+	for i in range(1, n-r+1):
+		den *= i
+	
+	return num/den
+	
 
 
 if __name__ == "__main__":
 	
-	p1 = [card.Card("H", "3"), card.Card("D", "4")]
-	p2 = [card.Card("C", "3"), card.Card("C", "2")]
+	p1 = [card.Card("H", "A"), card.Card("D", "2")]
+	p2 = [card.Card("C", "K"), card.Card("C", "Q")]
+	c = [card.Card("C", "A")]
 	
-	score = comparePockets(p1, p2)
+	numPossibilities = choose(48-len(c), 5-len(c)) 
 	
-	print "Win percentage = "+ str((1+score/1712304.0)/2)
+	wins, ties, losses = comparePockets(p1, p2, c)
+	
+	print "Win percentage = "+ str(100.0*wins/numPossibilities)+"%"
+	print "Tie percentage = "+ str(100.0*ties/numPossibilities)+"%"
+	print "Loss percentage = "+ str(100.0*losses/numPossibilities)+"%"
 		
 	
 	

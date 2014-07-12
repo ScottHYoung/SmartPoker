@@ -47,7 +47,11 @@ class AI_Random(player.Player):
 		assert theDecision != None
 		
 		#More players, play less aggressively (2 players = 30%, 3 = 20%, 4 = 15%, ... 12 = 5%)
-		raiseChance = 60/len(theState.playersInfo)
+		numActive = 0
+		for p in theState.playersInfo:
+			if p.isInGame:
+				numActive += 1
+		raiseChance = 60/numActive
 		
 		
 		for p in theState.playersInfo:
@@ -60,15 +64,15 @@ class AI_Random(player.Player):
 		possibleRaise = me.bank - callAmount		
 				
 		#We'll call if the call amount is low, relative to our bank, or low relative to our pot
-		callChance = raiseChance + 60 - int(60*(callAmount/(me.bank+1))) + int(100*(callAmount/(me.pot+1)))
-				
+		callChance = raiseChance + 100 - int(50*(callAmount/(me.pot+callAmount+1.0))) - int(100*(callAmount/(me.bank+callAmount+1.0)))
+					
 		for d in decisions:
 			if d.name == decision.Decision.CALL and choice > 99-callChance:
 				theDecision = d
-			if d.name == decision.Decision.RAISE and choice > 99-raiseChance:
+			if d.name == decision.Decision.RAISE and choice > 99-raiseChance and possibleRaise > 0:
 				myRaise = possibleRaise
 				if possibleRaise > 0:
-					if choice > 99-(raiseChance/5): #go all-in
+					if choice > 99-(raiseChance/6): #go all-in
 						myRaise = possibleRaise
 					elif choice > 99-(raiseChance/3): #big raise
 						myRaise = int(me.bank/4) 
