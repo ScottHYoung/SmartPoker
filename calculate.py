@@ -19,8 +19,82 @@ import card, hand, deck
 #---------------------------------------------------------------------------
 def comparePocketsFast(p1, p2, c = []):
 	
-	pass
+	#---------------------------------------------------------------------------
+	#	Algorithm description
+	#
+	#	For each level of hand rank (straight flush, four-of-a-kind, full house, etc.)
+	#	we will run a specialized algorithm that will count the number of combinations
+	#	for which p1 has the highest, for which p2 has the highest, and for which there
+	#	the community cards have the highest. These counts will be overcounts, so we must
+	#	also subtract the overlap between ranks (i.e. where p2 has a Full house, but that
+	#	combination also included p1 having 4-of-a-kind)
+	#---------------------------------------------------------------------------
 
+	# STRAIGHT FLUSHES
+	#
+	#	Algorithm description:
+	#
+	
+	
+	#Run for each suit
+	for suitNum in range(4):
+		if suitNum == 0:
+			suit = card.Card.HEARTS
+		elif suitNum == 1:
+			suit = card.Card.DIAMONDS
+		elif suitNum == 2:
+			suit = card.Card.SPADES
+		elif suitNum == 4:
+			suit = card.Card.CLUBS
+		else:
+			assert False
+		
+		#The low card goes from A to 10
+		for lowWindow in range(11):
+			# Count the number of cards owned by p1, p2 and the community cards to count the contribution of this window
+			# to the w/t/l count
+			p1Cards = 0
+			p2Cards = 0
+			cCards = 0
+			overcard = -1 #-1 = deck, 0 = c, 1 = p1, 2 = p2
+			
+			#the window is the next five cards after the low card. Also go one card further to check who holds the overcard
+			for window in range(lowWindow, lowWindow+6):
+				if ((p1[0].suit == suit and p1[0].getRank() == window) or
+					(p1[1].suit == suit and p1[1].getRank() == window)):
+					if window == lowWindow+5:
+						overcard = 1
+					else:
+						p1cards += 1
+				elif ((p2[0].suit == suit and p2[0].getRank() == window) or
+					 (p2[1].suit == suit and p2[1].getRank() == window)):
+					if window == lowWindow+5:
+						overcard = 2
+					else:
+						p1cards += 1	
+				for ccard in c:
+					if ccard.suit == suit and ccard.getRank() == window:
+						if window == lowWindow+5:
+							overcard = 0
+						else:
+							cCards += 1
+						break
+			
+							
+			
+			# both players held cards in this window then the SF is impossible
+			if (p1Cards == 0 or p2cards == 0)
+				
+			
+				
+			
+			
+		
+		
+
+	pass
+	
+	
 #---------------------------------------------------------------------------
 #	comparePockets - This function will, through brute force compare the 
 #	hands generated from all possible permutations of cards and return the
@@ -28,8 +102,12 @@ def comparePocketsFast(p1, p2, c = []):
 #
 #	p1, and p2 should be in the format [Card1a, Card1b], [Card2a, Card2b]
 #	optionally can pass a set of community cards to fix.
+#
+#	If analysis is true, instead of storing wins, ties and losses, comparePockets
+#	will give a table of hand evaluation ranks (i.e. # of times A had a SF while 
+#	B had a FH) which will be useful for debugging comparePocketsFast()
 #---------------------------------------------------------------------------
-def comparePockets(p1, p2, c = []):
+def comparePockets(p1, p2, c = [], analysis = False):
 	
 	d = deck.Deck()
 	d.pull(p1[0].suit, p1[0].number)
@@ -47,6 +125,18 @@ def comparePockets(p1, p2, c = []):
 	wins = 0
 	ties = 0
 	losses = 0
+	
+	if analysis:
+		#Table is indexed by A's hand evaluations with an array storing counts of B's hand evalutations
+		aTable = {}
+		for i in range(9):
+			aTable[i] = {}
+			for l in range(9):
+				aTable[i][l] = {}
+				#Store win/tie/loss
+				for m in range(3):
+					aTable[i][l][m] = 0
+		
 	handOne = hand.Hand([], 1)
 	handTwo = hand.Hand([], 2)
 	while True:
@@ -55,14 +145,24 @@ def comparePockets(p1, p2, c = []):
 		handOne.cards = p1 + communityCards
 		handTwo.cards = p2 + communityCards
 		
+		if analysis:
+			aRank = handOne.evaluate()[0]
+			bRank = handTwo.evaluate()[0]
+		
 		winners = hand.winner([handOne, handTwo])
 		if len(winners) == 1:
 			if winners[0] == 1:
 				wins += 1
+				if analysis:
+					aTable[aRank][bRank][0] += 1
 			else:
 				losses += 1
+				if analysis:
+					aTable[aRank][bRank][2] += 1
 		else:
 			ties += 1
+			if analysis:
+				aTable[aRank][bRank][1] += 1
 		
 		seq = getNextCombinationSequence(seq, d.cards)
 		numSeq += 1
@@ -74,6 +174,9 @@ def comparePockets(p1, p2, c = []):
 		if not seq:
 			break 
 			
+	if analysis:
+		return aTable
+		
 	return (wins, ties, losses)
 	
 #---------------------------------------------------------------------------
@@ -148,21 +251,75 @@ def choose(n, r):
 	
 	return num/den
 	
+def printAnalysis(wins=True, ties=True, losses=True, total=False):
+
+	if wins:
+		print "Hands won: "
+		print "   0:\t\t1:\t\t2:\t\t3:\t\t4:\t\t5:\t\t6:\t\t7:\t\t8:"
+		print ""
+		for i in range(9):
+			line = str(i)+": "
+			for l in range(9):
+				line += str(aTable[i][l][0]) + "\t\t"
+			
+			print line
+		print ""
+		
+	if ties:
+		print "Hands tied: "
+		print "   0:\t\t1:\t\t2:\t\t3:\t\t4:\t\t5:\t\t6:\t\t7:\t\t8:"
+		print ""
+		for i in range(9):
+			line = str(i)+": "
+			for l in range(9):
+				line += str(aTable[i][l][1]) + "\t\t"
+
+			print line	
+		print ""
+			
+	if ties:
+		print "Hands lost: "
+		print "   0:\t\t1:\t\t2:\t\t3:\t\t4:\t\t5:\t\t6:\t\t7:\t\t8:"
+		print ""
+		for i in range(9):
+			line = str(i)+": "
+			for l in range(9):
+				line += str(aTable[i][l][2]) + "\t\t"
+
+			print line
+		print ""
+			
+	if total:
+		print "All hands: "
+		print "   0:\t\t1:\t\t2:\t\t3:\t\t4:\t\t5:\t\t6:\t\t7:\t\t8:"
+		print ""
+		for i in range(9):
+			line = str(i)+": "
+			for l in range(9):
+				line += str(aTable[i][l][0]+aTable[i][l][1]+aTable[i][l][2]) + "\t\t"
+
+			print line
+		print ""					
+	
 
 
 if __name__ == "__main__":
 	
 	p1 = [card.Card("H", "A"), card.Card("D", "2")]
 	p2 = [card.Card("C", "K"), card.Card("C", "Q")]
-	c = [card.Card("C", "A")]
+	c = []
 	
 	numPossibilities = choose(48-len(c), 5-len(c)) 
 	
-	wins, ties, losses = comparePockets(p1, p2, c)
+	aTable = comparePockets(p1, p2, c, analysis=True)
+	
+	printAnalysis()
+	
+	"""wins, ties, losses = comparePockets(p1, p2, c)
 	
 	print "Win percentage = "+ str(100.0*wins/numPossibilities)+"%"
 	print "Tie percentage = "+ str(100.0*ties/numPossibilities)+"%"
-	print "Loss percentage = "+ str(100.0*losses/numPossibilities)+"%"
+	print "Loss percentage = "+ str(100.0*losses/numPossibilities)+"%" """
 		
 	
 	

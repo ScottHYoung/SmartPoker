@@ -8,6 +8,9 @@ but has some reasoning process so raises/calls are at least somewhat reasonable)
 
 To Do:
 
+- BUG: If you're big blind and are pushed in an insufficient amount, the first round should force you to at least bet
+       the big blind, instead of whatever that player pushed in.
+- Getting assertion errors for some AI plays -- need to debug!
 - Create a getComboSequenceFast() function and benchmark it against the more laborious
   manually calculated version
 

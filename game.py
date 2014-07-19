@@ -536,6 +536,8 @@ class Game():
 			
 			if givenPlayer.isActive:
 				#Make sure the decision returned by the AI or Human player was valid
+				if not gameState.isValidDecision(givenPlayer.id, d):
+					print givenPlayer.name + " " + d.name + "  " + int(d.value)
 				assert gameState.isValidDecision(givenPlayer.id, d)
 				return d
 			else:
